@@ -33,9 +33,9 @@ namespace OnePoint.AccountSdk
             }
         }
 
-        private const string DefaultApiLocaDomain = "http://localhost:8395/";
-        private const string DefaultApiDevelopementDomain = "http://apidev.1pt.mobi/V3.0/";
-        private const string DefaultApiStagingDomain = "http://apistaging.1pt.mobi/V3.1/";
+        private const string DefaultApiLocaDomain = "";
+        private const string DefaultApiDevelopementDomain = "";
+        private const string DefaultApiStagingDomain = "";
         private const string DefaultApiLiveDomain = "https://api.1pt.mobi/V3.1/";
 
 
