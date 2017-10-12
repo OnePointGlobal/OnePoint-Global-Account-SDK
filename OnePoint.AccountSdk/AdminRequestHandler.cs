@@ -33,6 +33,17 @@ namespace OnePoint.AccountSdk
             }
         }
 
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
+        }
+
         private const string DefaultApiLocaDomain = "";
         private const string DefaultApiDevelopementDomain = "";
         private const string DefaultApiStagingDomain = "";
@@ -85,15 +96,26 @@ namespace OnePoint.AccountSdk
                         request.Content = new StringContent(requestArg, Encoding.UTF8, "application/json");
                     break;
                 case RouteStyle.Upload:
-                    FileInfo fi = new FileInfo(requestArg);
-                    string fileName = fi.Name;
-                    byte[] fileContents = File.ReadAllBytes(fi.FullName);
+                    //FileInfo fi = new FileInfo(requestArg);
+                    //string fileName = fi.Name;
+                    //byte[] fileContents = File.ReadAllBytes(fi.FullName);
 
-                    request.Headers.ExpectContinue = false;
+                    //request.Headers.ExpectContinue = false;
+                    //MultipartFormDataContent multiPartContent = new MultipartFormDataContent("----MyGreatBoundary");
+                    //ByteArrayContent byteArrayContent = new ByteArrayContent(fileContents);
+                    //byteArrayContent.Headers.Add("Content-Type", "application/octet-stream");
+                    //multiPartContent.Add(byteArrayContent, fileName, fileName);
+                    //request.Content = multiPartContent;
+
                     MultipartFormDataContent multiPartContent = new MultipartFormDataContent("----MyGreatBoundary");
-                    ByteArrayContent byteArrayContent = new ByteArrayContent(fileContents);
-                    byteArrayContent.Headers.Add("Content-Type", "application/octet-stream");
-                    multiPartContent.Add(byteArrayContent, fileName, fileName);
+                    var files = requestArg.Split(';');
+                    foreach (var file in files)
+                    {
+                        string filename;
+                        var byteArrayContent = CreateFileContent(file, out filename);
+                        multiPartContent.Add(byteArrayContent, filename, filename);
+                    }
+
                     request.Content = multiPartContent;
 
                     break;
@@ -215,6 +237,18 @@ namespace OnePoint.AccountSdk
             var builder = new UriBuilder("https", hostname);
             builder.Path = "/" + routeName;
             return builder.Uri;
+        }
+
+        private ByteArrayContent CreateFileContent(string file, out string filename)
+        {
+            FileInfo fi = new FileInfo(file);
+            filename = fi.Name;
+            byte[] fileContents = File.ReadAllBytes(fi.FullName);
+
+            ByteArrayContent byteArrayContent = new ByteArrayContent(fileContents);
+            byteArrayContent.Headers.Add("Content-Type", "application/octet-stream");
+
+            return byteArrayContent;
         }
 
         private string CheckForError(string text)
