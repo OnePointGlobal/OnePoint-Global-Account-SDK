@@ -8,19 +8,21 @@ namespace OnePoint.AccountSdk.PanelPanellist
 {
     public class Panel
     {
-        public int UserID { get; set; }
         public int PanellistCount { get; set; }
-        public int SampleID { get; set; }
-        public int PanelID { get; set; }
-        public int ThemeTemplateID { get; set; }
+        public string MediaUrl { get; set; }
+        public string LogoUrl { get; set; }
+        public long PanelID { get; set; }
+        public long ThemeTemplateID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int PanelType { get; set; }
         public string SearchTag { get; set; }
         public string Remark { get; set; }
         public bool IsDeleted { get; set; }
-        public string CreatedDate { get; set; }
-        public string LastUpdatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime LastUpdatedDate { get; set; }
+        public long MediaID { get; set; }
+        public long LogoID { get; set; }
     }
 
     public class Panellist
