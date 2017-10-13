@@ -86,7 +86,8 @@ namespace OnePoint.AccountSdk
                     break;
                 case RouteStyle.Upload:
                     MultipartFormDataContent multiPartContent = new MultipartFormDataContent("----MyGreatBoundary");
-                    var files = requestArg.Split(';');
+                    char[] charSeparators = new char[] { ';' };
+                    var files = requestArg.Split(charSeparators,StringSplitOptions.RemoveEmptyEntries);
                     foreach (var file in files)
                     {
                         string filename;
