@@ -33,17 +33,6 @@ namespace OnePoint.AccountSdk
             }
         }
 
-        public static string AssemblyDirectory
-        {
-            get
-            {
-                string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-                UriBuilder uri = new UriBuilder(codeBase);
-                string path = Uri.UnescapeDataString(uri.Path);
-                return Path.GetDirectoryName(path);
-            }
-        }
-
         private const string DefaultApiLocaDomain = "";
         private const string DefaultApiDevelopementDomain = "";
         private const string DefaultApiStagingDomain = "";
