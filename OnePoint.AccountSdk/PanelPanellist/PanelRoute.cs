@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -24,7 +25,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
 
         public PanelRootObject GetUserPanels()
         {
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanel/GetPanels", HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanel/GetUserPanels", HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
             return x.Result.JsonToObject(new PanelRootObject(), "Panels");
         }
@@ -59,17 +60,51 @@ namespace OnePoint.AccountSdk.PanelPanellist
             return x.Result.JsonToObject(new PanelRootObject(), "Panels");
         }
 
-        public PanelRootObject UpdatePanel(string name, string description, long panelId)
+        public PanelRootObject UpdatePanel(long panelId, string name, string description, string logoImagePath = "", string backGroundImagePath = "")
         {
+            string files = string.Empty;
+            RouteStyle routeStyle = RouteStyle.Rpc;
+
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) || panelId < 1)
             {
                 return result.ErrorToObject(new PanelRootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanel/UpdatePanel?Editname=" + name + "&Editdescription=" + description + "&PanelId=" + panelId, HttpMethod.Put, RouteStyle.Rpc, null);
+            if (!string.IsNullOrEmpty(logoImagePath))
+            {
+                if (!File.Exists(logoImagePath))
+                {
+                    return result.ErrorToObject(new PanelRootObject(), "File not exist!");
+                }
+                routeStyle = RouteStyle.Upload;
+                var logoimage = Helper.MoveFile(logoImagePath, "Panel-logo");
+                files = logoimage + ";";
+            }
+
+            if (!string.IsNullOrEmpty(backGroundImagePath))
+            {
+                if (!File.Exists(backGroundImagePath))
+                {
+                    return result.ErrorToObject(new PanelRootObject(), "File not exist!");
+                }
+                routeStyle = RouteStyle.Upload;
+                var Bkgimage = Helper.MoveFile(backGroundImagePath, "Panel-background");
+                files = files + Bkgimage;
+            }
+
+            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanel/UpdatePanel?Editname=" + name + "&Editdescription=" + description + "&PanelId=" + panelId, HttpMethod.Put, routeStyle, string.IsNullOrEmpty(files) ? null : files);
             x.Wait();
             return x.Result.JsonToObject(new PanelRootObject(), "Panels");
         }
 
+        public PanelRootObject SetPanelTheme(long panelId, int themeTemplateID)
+        {
+            var requestArg = JsonConvert.SerializeObject(new { PanelId = panelId, ThemeId = themeTemplateID });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanel/SetTheme", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            x.Wait();
+            return x.Result.JsonToObject(new PanelRootObject(), "Panels");
+        }
+        
     }
 }
