@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -190,5 +191,42 @@ namespace OnePoint.AccountSdk
     {
         App = 1,
         Adminsuite = 2
+    }
+
+
+    public static class Helper
+    {
+        /// <summary>
+        /// The assembly directory folder.
+        /// </summary>
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
+        }
+
+        /// <summary>
+        /// Copy a file to assembly directory.
+        /// </summary>
+        /// <param name="source">The source file path to be moved.</param>
+        /// <param name="filename">The name of the file.</param>
+        /// <returns></returns>
+        public static string MoveFile(string source, string filename)
+        {
+            string extension = Path.GetExtension(source);
+            var destnationfile = AssemblyDirectory + "\\" + filename + extension;
+            if (File.Exists(destnationfile))
+            {
+                File.Delete(destnationfile);
+            }
+            File.Copy(source, destnationfile);
+            return destnationfile;
+        }
+
     }
 }
