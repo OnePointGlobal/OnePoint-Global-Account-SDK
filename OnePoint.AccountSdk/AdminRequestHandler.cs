@@ -96,17 +96,6 @@ namespace OnePoint.AccountSdk
                         request.Content = new StringContent(requestArg, Encoding.UTF8, "application/json");
                     break;
                 case RouteStyle.Upload:
-                    //FileInfo fi = new FileInfo(requestArg);
-                    //string fileName = fi.Name;
-                    //byte[] fileContents = File.ReadAllBytes(fi.FullName);
-
-                    //request.Headers.ExpectContinue = false;
-                    //MultipartFormDataContent multiPartContent = new MultipartFormDataContent("----MyGreatBoundary");
-                    //ByteArrayContent byteArrayContent = new ByteArrayContent(fileContents);
-                    //byteArrayContent.Headers.Add("Content-Type", "application/octet-stream");
-                    //multiPartContent.Add(byteArrayContent, fileName, fileName);
-                    //request.Content = multiPartContent;
-
                     MultipartFormDataContent multiPartContent = new MultipartFormDataContent("----MyGreatBoundary");
                     var files = requestArg.Split(';');
                     foreach (var file in files)
@@ -115,9 +104,7 @@ namespace OnePoint.AccountSdk
                         var byteArrayContent = CreateFileContent(file, out filename);
                         multiPartContent.Add(byteArrayContent, filename, filename);
                     }
-
                     request.Content = multiPartContent;
-
                     break;
                 default:
                     throw new InvalidOperationException(string.Format(
