@@ -62,7 +62,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
         public bool IsDeleted { get; set; }
     }
 
-    public class ProfileElement
+    public class ProfileVariable
     {
         public int VariableID { get; set; }
         public string Name { get; set; }
@@ -88,9 +88,9 @@ namespace OnePoint.AccountSdk.PanelPanellist
         public bool IsSuccess { get; set; }
     }
 
-    public class ProfileElementRootObject
+    public class ProfileVariableRootObject
     {
-        public List<Panel> ProfileElements { get; set; }
+        public List<ProfileVariable> ProfileElements { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
     }
