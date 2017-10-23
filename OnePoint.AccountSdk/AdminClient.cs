@@ -1,42 +1,36 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using System.Windows;
+using OnePoint.AccountSdk.User;
+using OnePoint.AccountSdk.Survey;
+using OnePoint.AccountSdk.Project;
+using OnePoint.AccountSdk.Email;
+using OnePoint.AccountSdk.Common;
+using OnePoint.AccountSdk.Questionnaire;
+using OnePoint.AccountSdk.Media;
+using OnePoint.AccountSdk.PanelPanellist;
+using OnePoint.AccountSdk.GeoLocation;
+using OnePoint.AccountSdk.Sample;
+using OnePoint.AccountSdk.Theme;
+using OnePoint.AccountSdk.Schedule;
 
 namespace OnePoint.AccountSdk
 {
-    using OnePoint.AccountSdk.User;
-    using OnePoint.AccountSdk.Survey;
-    using OnePoint.AccountSdk.Project;
-    using OnePoint.AccountSdk.Email;
-    using OnePoint.AccountSdk.Common;
-    using OnePoint.AccountSdk.Questionnaire;
-    using OnePoint.AccountSdk.Media;
-    using OnePoint.AccountSdk.PanelPanellist;
-    using OnePoint.AccountSdk.GeoLocation;
-    using OnePoint.AccountSdk.Sample;
-    using OnePoint.AccountSdk.Theme;
-    using OnePoint.AccountSdk.Schedule;
-
     public class AdminClient
     {
-        public UserRoute user { get; private set; }
-        public SurveyRoute survey { get; private set; }
-        public ProjectRoute project { get; private set; }
-        public EmailRoute email { get; private set; }
-        public CommonRoute common { get; private set; }
-        public QuestionnaireRoute questionnaire { get; private set; }
-        public MediaRoute media { get; private set; }
-        public PanelRoute panel { get; private set; }
-        public PanellistRoute panellist { get; private set; }
-        public ProfileElementRoute profileElement { get; private set; }
-        public GeoLocationRoute geoLocation { get; private set; }
-        public SampleRoute sample { get; private set; }
-        public ThemeRoute theme { get; private set; }
-        public SchedulerRoute scheduler { get; private set; }
+        public UserRoute User { get; private set; }
+        public SurveyRoute Survey { get; private set; }
+        public ProjectRoute Project { get; private set; }
+        public EmailRoute Email { get; private set; }
+        public CommonRoute Common { get; private set; }
+        public QuestionnaireRoute Questionnaire { get; private set; }
+        public MediaRoute Media { get; private set; }
+        public PanelRoute Panel { get; private set; }
+        public PanellistRoute Panellist { get; private set; }
+        public ProfileElementRoute ProfileElement { get; private set; }
+        public GeoLocationRoute GeoLocation { get; private set; }
+        public SampleRoute Sample { get; private set; }
+        public ThemeRoute Theme { get; private set; }
+        public SchedulerRoute Scheduler { get; private set; }
         
         public AdminClient()
         {
@@ -65,20 +59,20 @@ namespace OnePoint.AccountSdk
 
         private void InitializeRoutes(AdminRequestHandler handler)
         {
-            this.user = new UserRoute(handler);
-            this.survey = new SurveyRoute(handler);
-            this.project = new ProjectRoute(handler);
-            this.email = new EmailRoute(handler);
-            this.common = new CommonRoute(handler);
-            this.questionnaire = new QuestionnaireRoute(handler);
-            this.media = new MediaRoute(handler);
-            this.panel = new PanelRoute(handler);
-            this.panellist = new PanellistRoute(handler);
-            this.profileElement = new ProfileElementRoute(handler);
-            this.geoLocation = new GeoLocationRoute(handler);
-            this.sample = new SampleRoute(handler);
-            this.theme = new ThemeRoute(handler);
-            this.scheduler = new SchedulerRoute(handler);
+            User = new UserRoute(handler);
+            Survey = new SurveyRoute(handler);
+            Project = new ProjectRoute(handler);
+            Email = new EmailRoute(handler);
+            Common = new CommonRoute(handler);
+            Questionnaire = new QuestionnaireRoute(handler);
+            Media = new MediaRoute(handler);
+            Panel = new PanelRoute(handler);
+            Panellist = new PanellistRoute(handler);
+            ProfileElement = new ProfileElementRoute(handler);
+            GeoLocation = new GeoLocationRoute(handler);
+            Sample = new SampleRoute(handler);
+            Theme = new ThemeRoute(handler);
+            Scheduler = new SchedulerRoute(handler);
         }
     }
 }
