@@ -13,14 +13,14 @@ namespace OnePoint.AccountSdk.PanelPanellist
     public class PanellistRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        AdminRequestHandler requestHandler { get; set; }
+        private AdminRequestHandler RequestHandler { get; set; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private Result result = new Result();
 
         public PanellistRoute(AdminRequestHandler hanlder)
         {
-            this.requestHandler = hanlder;
+            RequestHandler = hanlder;
         }
 
         public PanellistRootObject GetPanelPanellist(long panelId)
@@ -30,7 +30,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
                 return result.ErrorToObject(new PanellistRootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/GetPanellists?panelID=" + panelId, HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/GetPanellists?panelID=" + panelId, HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
         }
@@ -45,7 +45,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
             var requestArg = JsonConvert.SerializeObject(new { PanelID = panelId, PanellistIDs = String.Join(",", panellistIds) });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/DeletePanellists?panelID=" + panelId, HttpMethod.Delete, RouteStyle.Rpc, requestArg);
+            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/DeletePanellists?panelID=" + panelId, HttpMethod.Delete, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
 
@@ -58,7 +58,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
                 return result.ErrorToObject(new PanellistRootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/FileUpload?panelId=" + panelId, HttpMethod.Post, RouteStyle.Upload, filePath);
+            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/FileUpload?panelId=" + panelId, HttpMethod.Post, RouteStyle.Upload, filePath);
             x.Wait();
 
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
@@ -91,7 +91,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
             });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
         }
@@ -123,7 +123,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
             });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
         }
