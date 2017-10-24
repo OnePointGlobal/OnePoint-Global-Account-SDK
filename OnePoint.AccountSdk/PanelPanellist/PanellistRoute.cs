@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -45,10 +43,9 @@ namespace OnePoint.AccountSdk.PanelPanellist
             var requestArg = JsonConvert.SerializeObject(new { PanelID = panelId, PanellistIDs = String.Join(",", panellistIds) });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/DeletePanellists?panelID=" + panelId, HttpMethod.Delete, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/DeletePanellists?panelID=" + panelId, HttpMethod.Delete, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
-
         }
 
         public PanellistRootObject UploadPanllistFile(long panelId, string filePath)
@@ -64,16 +61,16 @@ namespace OnePoint.AccountSdk.PanelPanellist
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
         }
 
-        public PanellistRootObject AddPanellist(long PanelId, string firstName, string lastName, Title title, string email, long mobileNumber, DateTime dob, string website, Gender gender, string address1, string address2, int postalcode, int countryCode, MaritalStatus martialStatus)
+        public PanellistRootObject AddPanellist(long panelId, string firstName, string lastName, string email, long mobileNumber, DateTime dob, int countryCode, string address1 = "", string address2 = "", string postalcode = "", string website = "", Title title = Title.Mr, Gender gender = Gender.NotSpecified, MaritalStatus martialStatus = MaritalStatus.NotSpecified)
         {
-            if (PanelId < 1 || string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(email) || mobileNumber < 1)
+            if (panelId < 1 || string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(email) || mobileNumber < 1)
             {
                 return result.ErrorToObject(new PanellistRootObject(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new
             {
-                PanelID = PanelId,
+                PanelID = panelId,
                 Email = email,
                 Firstname = firstName,
                 Lastname = lastName,
@@ -91,23 +88,22 @@ namespace OnePoint.AccountSdk.PanelPanellist
             });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/InsertPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
         }
 
-        public PanellistRootObject UpdatePanellist(long PanelId, long panellistId, string firstName, string lastName, Title title, string email, long mobileNumber, DateTime dob, string website, Gender gender, string address1, string address2, int postalcode, int countryCode, MaritalStatus martialStatus)
+        public PanellistRootObject UpdatePanellist(long panelId, long panellistId, string firstName, string lastName, long mobileNumber, DateTime dob, int countryCode, string address1 = "", string address2 = "", string postalcode = "", string website = "", Title title = Title.Mr, Gender gender = Gender.NotSpecified, MaritalStatus martialStatus = MaritalStatus.NotSpecified)
         {
-            if (PanelId < 1 || panellistId < 1 || string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(email) || mobileNumber < 1)
+            if (panelId < 1 || panellistId < 1 || string.IsNullOrEmpty(firstName) || mobileNumber < 1)
             {
                 return result.ErrorToObject(new PanellistRootObject(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new
             {
-                PanelID = PanelId,
+                PanelID = panelId,
                 PanellistID = panellistId,
-                Email = email,
                 Firstname = firstName,
                 Lastname = lastName,
                 Title = (int)title,
@@ -123,7 +119,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
             });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/UpdatePanellist", HttpMethod.Put, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
         }
