@@ -124,5 +124,28 @@ namespace OnePoint.AccountSdk.PanelPanellist
             return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
         }
 
+        public PanellistRootObject GetPanellistByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return result.ErrorToObject(new PanellistRootObject(), "Invalid parameter(s)");
+            }
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/GetPanellistByEmail?email=" + email, HttpMethod.Get, RouteStyle.Rpc, null);
+            x.Wait();
+            return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
+        }
+
+        public PanellistRootObject GetPanelPanellist(long panelId, long panellistId)
+        {
+            if (panelId < 1 || panellistId < 1)
+            {
+                return result.ErrorToObject(new PanellistRootObject(), "Invalid parameter(s)");
+            }
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/GetPanelPanellist?panelId=" + panelId + "&panellistId=" + panellistId, HttpMethod.Get, RouteStyle.Rpc, null);
+            x.Wait();
+            return x.Result.JsonToObject(new PanellistRootObject(), "Panellist");
+        }
     }
 }
