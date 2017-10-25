@@ -51,6 +51,7 @@
     <Compile Include="AdminClient.cs" />
     <Compile Include="AdminRequestHandler.cs" />
     <Compile Include="AppConfig.cs" />
+    <Compile Include="Common\Common.cs" />
     <Compile Include="Common\CommonRoute.cs" />
     <Compile Include="Email\Email.cs" />
     <Compile Include="Email\EmailRoute.cs" />
