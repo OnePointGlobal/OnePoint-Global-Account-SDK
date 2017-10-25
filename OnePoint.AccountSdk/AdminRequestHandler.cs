@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,13 +14,13 @@ namespace OnePoint.AccountSdk
 {
     public class AdminRequestHandler
     {
-        public HttpClient HttpClient { get; private set; }
+        public HttpClient HttpClient { get; }
 
-        public string hostname { get; private set; }
+        public string Hostname { get; }
 
         public string SessionId { get; set; }
 
-        public IDictionary<string, string> HostMap { get; private set; }
+        public IDictionary<string, string> HostMap { get; }
 
         private string LiveHost
         {
@@ -41,9 +40,9 @@ namespace OnePoint.AccountSdk
 
         public AdminRequestHandler()
         {
-            this.HostMap = new Dictionary<string, string>
+            HostMap = new Dictionary<string, string>
             {
-                { HostType.ApiLive, this.LiveHost },
+                { HostType.ApiLive, LiveHost },
                 { HostType.ApiDev, DefaultApiDevelopementDomain },
                 { HostType.ApiStaging, DefaultApiStagingDomain },
                 { HostType.ApiLocal, DefaultApiLocaDomain }
@@ -53,8 +52,8 @@ namespace OnePoint.AccountSdk
         public AdminRequestHandler(HttpClient client, string hostType)
             : this()
         {
-            this.HttpClient = client;
-            this.hostname = this.HostMap[hostType.ToLower()];
+            HttpClient = client;
+            Hostname = HostMap[hostType.ToLower()];
         }
 
         public async Task<Result> SendRequestAsync(
@@ -65,13 +64,13 @@ namespace OnePoint.AccountSdk
            string requestArg,
            Stream body = null)
         {
-            var uri = new Uri(this.hostname + routeName);
+            var uri = new Uri(Hostname + routeName);
 
             var request = new HttpRequestMessage(method, uri);
 
-            if (!string.IsNullOrEmpty(this.SessionId))
+            if (!string.IsNullOrEmpty(SessionId))
             {
-                request.Headers.Add("SessionID", this.SessionId);
+                request.Headers.Add("SessionID", SessionId);
             }
 
             switch (routeStyle)
@@ -87,11 +86,10 @@ namespace OnePoint.AccountSdk
                 case RouteStyle.Upload:
                     MultipartFormDataContent multiPartContent = new MultipartFormDataContent("----MyGreatBoundary");
                     char[] charSeparators = new char[] { ';' };
-                    var files = requestArg.Split(charSeparators,StringSplitOptions.RemoveEmptyEntries);
+                    var files = requestArg.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var file in files)
                     {
-                        string filename;
-                        var byteArrayContent = CreateFileContent(file, out filename);
+                        var byteArrayContent = CreateFileContent(file, out string filename);
                         multiPartContent.Add(byteArrayContent, filename, filename);
                     }
                     request.Content = multiPartContent;
@@ -104,7 +102,7 @@ namespace OnePoint.AccountSdk
             }
 
             var disposeResponse = true;
-            var response = await this.HttpClient
+            var response = await HttpClient
                 .SendAsync(request).ConfigureAwait(false);
 
             try
@@ -112,7 +110,7 @@ namespace OnePoint.AccountSdk
                 if ((int)response.StatusCode >= 500)
                 {
                     var reason = await response.Content.ReadAsStringAsync();
-                    reason = this.CheckForError(reason);
+                    reason = CheckForError(reason);
                     return new Result
                     {
                         IsError = true,
@@ -123,7 +121,7 @@ namespace OnePoint.AccountSdk
                 else if (response.StatusCode == HttpStatusCode.BadRequest)
                 {
                     var reason = await response.Content.ReadAsStringAsync();
-                    reason = this.CheckForError(reason);
+                    reason = CheckForError(reason);
                     return new Result
                     {
                         IsError = true,
@@ -134,7 +132,7 @@ namespace OnePoint.AccountSdk
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     var reason = await response.Content.ReadAsStringAsync();
-                    reason = this.CheckForError(reason);
+                    reason = CheckForError(reason);
                     return new Result
                     {
                         IsError = true,
@@ -145,7 +143,7 @@ namespace OnePoint.AccountSdk
                 else if ((int)response.StatusCode == 429)
                 {
                     var reason = await response.Content.ReadAsStringAsync();
-                    reason = this.CheckForError(reason);
+                    reason = CheckForError(reason);
                     return new Result
                     {
                         IsError = true,
@@ -158,7 +156,7 @@ namespace OnePoint.AccountSdk
                     response.StatusCode == HttpStatusCode.NotFound)
                 {
                     var reason = await response.Content.ReadAsStringAsync();
-                    reason = this.CheckForError(reason);
+                    reason = CheckForError(reason);
                     return new Result
                     {
                         IsError = true,
@@ -191,7 +189,7 @@ namespace OnePoint.AccountSdk
                 else
                 {
                     var text = await response.Content.ReadAsStringAsync();
-                    text = this.CheckForError(text);
+                    CheckForError(text);
                     return new Result
                     {
                         IsError = true,
@@ -211,8 +209,10 @@ namespace OnePoint.AccountSdk
 
         private Uri GetRouteUri(string hostname, string routeName)
         {
-            var builder = new UriBuilder("https", hostname);
-            builder.Path = "/" + routeName;
+            var builder = new UriBuilder("https", hostname)
+            {
+                Path = "/" + routeName
+            };
             return builder.Uri;
         }
 
@@ -233,8 +233,7 @@ namespace OnePoint.AccountSdk
             try
             {
                 var obj = JObject.Parse(text);
-                JToken error;
-                if (obj.TryGetValue("error", out error))
+                if (obj.TryGetValue("error", out JToken error))
                 {
                     return error.ToString();
                 }
@@ -246,8 +245,6 @@ namespace OnePoint.AccountSdk
                 return text;
             }
         }
-
-
 
     }
 
