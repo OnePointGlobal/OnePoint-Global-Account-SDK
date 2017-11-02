@@ -55,14 +55,14 @@ namespace OnePoint.AccountSdk.Project
             return x.Result.JsonToObject(new RootObject(), "Projects");
         }
 
-        public RootObject UpdateProject(long projectID, string name, string description)
+        public RootObject UpdateProject(long projectId, string name, string description)
         {
-            if (projectID <= 0 || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description))
+            if (projectId <= 0 || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description))
             {
                 return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { ProjectID = projectID, Name = name, Description = description });
+            var requestArg = JsonConvert.SerializeObject(new { ProjectID = projectId, Name = name, Description = description });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserProject/UpdateProject", HttpMethod.Put, RouteStyle.Rpc, requestArg);
@@ -71,7 +71,7 @@ namespace OnePoint.AccountSdk.Project
             return x.Result.JsonToObject(new RootObject(), "Projects");
         }
 
-        public byte[] ExportResults(string folderPath, long projectId, int languageId, DateTime? fromDate = null, DateTime? toDate = null, bool factor = false, bool systemVariable = false, bool alldata = false)
+        public byte[] ExportResults(string folderPath, long projectId, int languageId, DateTime? fromDate = null, DateTime? toDate = null, bool factor = false, bool systemVariable = false, bool alldata = false, short OnlyCompletes = 0)
         {
             if (projectId <= 0 || languageId <= 0 || !Directory.Exists(folderPath))
             {
@@ -84,7 +84,7 @@ namespace OnePoint.AccountSdk.Project
                 toDate = DateTime.Now;
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { ProjectID = projectId, FromDate = fromDate, ToDate = toDate, AllData = alldata, LanguageID = languageId, Factor = factor, SystemVariables = systemVariable });
+            var requestArg = JsonConvert.SerializeObject(new { ProjectID = projectId, FromDate = fromDate, ToDate = toDate, AllData = alldata, LanguageID = languageId, Factor = factor, SystemVariables = systemVariable, OnlyComplete = OnlyCompletes });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserProject/ExportProject", HttpMethod.Post, RouteStyle.Download, requestArg);
             x.Wait();
