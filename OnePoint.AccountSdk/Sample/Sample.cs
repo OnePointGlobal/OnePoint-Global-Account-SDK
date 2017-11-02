@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace OnePoint.AccountSdk.Sample
 {
@@ -12,16 +8,16 @@ namespace OnePoint.AccountSdk.Sample
 
     public class Filter
     {
-        public int SampleQueryElementID { get; set; }
+        public int SampleQueryElementId { get; set; }
         public string AndOr { get; set; }
         public string FieldName { get; set; }
-        public int ConditionID { get; set; }
+        public int ConditionId { get; set; }
         public string FieldValue { get; set; }
-        public int SampleID { get; set; }
+        public int SampleId { get; set; }
         public bool IsBasic { get; set; }
         public int Type { get; set; }
-        public int VariableID { get; set; }
-        public int PanelID { get; set; }
+        public int VariableId { get; set; }
+        public int PanelId { get; set; }
         public bool IsDeleted { get; set; }
         public bool InUse { get; set; }
         public string CreatedDate { get; set; }
@@ -30,10 +26,10 @@ namespace OnePoint.AccountSdk.Sample
 
     public class Variable
     {
-        public int VariableID { get; set; }
+        public int VariableId { get; set; }
         public string Name { get; set; }
-        public int PanelID { get; set; }
-        public int TypeID { get; set; }
+        public int PanelId { get; set; }
+        public int TypeId { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsBasic { get; set; }
         public string CreatedDate { get; set; }
@@ -42,9 +38,9 @@ namespace OnePoint.AccountSdk.Sample
 
     public class SampleRootObject
     {
-        public List<OnePoint.AccountSdk.PanelPanellist.Panel> Panels { get; set; }
+        public List<PanelPanellist.Panel> Panels { get; set; }
         public List<Filter> Filters { get; set; }
-        public List<OnePoint.AccountSdk.PanelPanellist.Panellist> Panellists { get; set; }
+        public List<PanelPanellist.Panellist> Panellists { get; set; }
         public List<Variable> Variables { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
