@@ -1,10 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Diagnostics;
@@ -14,11 +9,11 @@ namespace OnePoint.AccountSdk.User
     public class UserRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        AdminRequestHandler requestHandler { get; set; }
+        private AdminRequestHandler RequestHandler { get; }
 
         public UserRoute(AdminRequestHandler hanlder)
         {
-            this.requestHandler = hanlder;
+            RequestHandler = hanlder;
         }
 
         /// <summary>
@@ -31,7 +26,7 @@ namespace OnePoint.AccountSdk.User
         {
             var requestArg = JsonConvert.SerializeObject(new { UserName = username, Password = password });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserAuthentication/Login", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserAuthentication/Login", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
             SetSession(x.Result);
             return x.Result.JsonToObject(new RootObject());
@@ -39,11 +34,11 @@ namespace OnePoint.AccountSdk.User
 
         public RootObject LogOut()
         {
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserAuthentication/Logout", HttpMethod.Post, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserAuthentication/Logout", HttpMethod.Post, RouteStyle.Rpc, null);
             x.Wait();
             var response = x.Result.JsonToObject(new RootObject());
 
-            if (response.IsSuccess == true)
+            if (response.IsSuccess)
             {
                 ClearSession();
             }
@@ -54,25 +49,18 @@ namespace OnePoint.AccountSdk.User
         {
             var requestArg = JsonConvert.SerializeObject(new { SharedKey = sharedKey});
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserAuthentication/LoginByKey", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserAuthentication/LoginByKey", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
             SetSession(x.Result);
             return x.Result.JsonToObject(new RootObject());
         }
 
-        private RootObject jsonRead(Result result)
+        private RootObject JsonRead(Result result)
         {
-            this.SetSession(result);
+            SetSession(result);
             var rootObj = result.Decoder(new RootObject());
 
-            if (rootObj.UserProfile == null)
-            {
-                rootObj.IsSuccess = false;
-            }
-            else
-            {
-                rootObj.IsSuccess = true;
-            }
+            rootObj.IsSuccess = rootObj.UserProfile != null;
 
             return rootObj;
         }
@@ -87,14 +75,13 @@ namespace OnePoint.AccountSdk.User
             var data = JObject.Parse(result.ObjectResult);
             if (data["SessionID"] != null)
             {
-                this.requestHandler.SessionId = data["SessionID"].ToString();
+                RequestHandler.SessionId = data["SessionID"].ToString();
             }
         }
 
         private void ClearSession()
         {
-            this.requestHandler.SessionId = null;
+            RequestHandler.SessionId = null;
         }
-
     }
 }
