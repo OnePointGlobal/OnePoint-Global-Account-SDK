@@ -3,10 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
 namespace OnePoint.AccountSdk
@@ -19,13 +16,7 @@ namespace OnePoint.AccountSdk
 
         public HttpResponseMessage HttpResponse { get; set; }
 
-        public string DonwloadFileName
-        {
-            get
-            {
-                return HttpResponse.Content.Headers.ContentDisposition.FileName;
-            }
-        }
+        public string DonwloadFileName => HttpResponse.Content.Headers.ContentDisposition.FileName;
 
         public string GetErrorJson
         {
@@ -33,8 +24,8 @@ namespace OnePoint.AccountSdk
             {
                 var error = new HttpError
                 {
-                    ErrorMessage = "Internal error!! Resource " + this.HttpResponse.StatusCode.ToString(),
-                    HttpStatusCode = Convert.ToString(this.HttpResponse.StatusCode)
+                    ErrorMessage = "Internal error!! Resource " + HttpResponse.StatusCode,
+                    HttpStatusCode = Convert.ToString(HttpResponse.StatusCode)
                 };
                 return JsonConvert.SerializeObject(error);
             }

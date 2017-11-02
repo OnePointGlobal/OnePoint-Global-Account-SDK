@@ -8,8 +8,8 @@ namespace OnePoint.AccountSdk.PanelPanellist
         public int PanellistCount { get; set; }
         public string MediaUrl { get; set; }
         public string LogoUrl { get; set; }
-        public long PanelID { get; set; }
-        public long ThemeTemplateID { get; set; }
+        public long PanelId { get; set; }
+        public long ThemeTemplateId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int PanelType { get; set; }
@@ -18,13 +18,13 @@ namespace OnePoint.AccountSdk.PanelPanellist
         public bool IsDeleted { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime LastUpdatedDate { get; set; }
-        public long MediaID { get; set; }
-        public long LogoID { get; set; }
+        public long MediaId { get; set; }
+        public long LogoId { get; set; }
     }
 
     public class Panellist
     {
-        public int PanellistID { get; set; }
+        public int PanellistId { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -36,7 +36,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         public string PostalCode { get; set; }
-        public string MediaID { get; set; }
+        public string MediaId { get; set; }
         public int CountryCode { get; set; }
         public bool TermsCondition { get; set; }
         public int Status { get; set; }
@@ -50,7 +50,7 @@ namespace OnePoint.AccountSdk.PanelPanellist
 
     public class Country
     {
-        public int CountryID { get; set; }
+        public int CountryId { get; set; }
         public string Name { get; set; }
         public string CountryCode { get; set; }
         public string Std { get; set; }
@@ -61,10 +61,10 @@ namespace OnePoint.AccountSdk.PanelPanellist
 
     public class ProfileVariable
     {
-        public int VariableID { get; set; }
+        public int VariableId { get; set; }
         public string Name { get; set; }
-        public int PanelID { get; set; }
-        public int TypeID { get; set; }
+        public int PanelId { get; set; }
+        public int TypeId { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsBasic { get; set; }
         public string CreatedDate { get; set; }

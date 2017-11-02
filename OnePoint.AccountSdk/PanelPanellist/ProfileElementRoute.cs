@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OnePoint.AccountSdk.PanelPanellist
@@ -12,39 +8,39 @@ namespace OnePoint.AccountSdk.PanelPanellist
     public class ProfileElementRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        AdminRequestHandler requestHandler { get; set; }
+        AdminRequestHandler RequestHandler { get;}
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Result result = new Result();
+        private readonly Result _result = new Result();
 
         public ProfileElementRoute(AdminRequestHandler hanlder)
         {
-            this.requestHandler = hanlder;
+            RequestHandler = hanlder;
         }
 
         public ProfileVariableRootObject GetPanelProfileVariables(long panelId)
         {
             if (panelId < 1)
             {
-                return result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/GetProfileVariables?panelID=" + panelId, HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/GetProfileVariables?panelID=" + panelId, HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
             return x.Result.JsonToObject(new ProfileVariableRootObject(), "ProfileElements");
         }
 
-        public ProfileVariableRootObject UpdateProfileVariable(long panelId, long variableID, string name, ProfileElementType type)
+        public ProfileVariableRootObject UpdateProfileVariable(long panelId, long variableId, string name, ProfileElementType type)
         {
-            if (string.IsNullOrEmpty(name) || panelId < 1 || variableID < 1)
+            if (string.IsNullOrEmpty(name) || panelId < 1 || variableId < 1)
             {
-                return result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { EditPanelID = panelId, EditProfileElementID = variableID, EditName = name, EditType = (int)type });
+            var requestArg = JsonConvert.SerializeObject(new { EditPanelID = panelId, EditProfileElementID = variableId, EditName = name, EditType = (int)type });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/UpdateProfileElement", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/UpdateProfileElement", HttpMethod.Put, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new ProfileVariableRootObject(), "ProfileElements");
         }
@@ -53,28 +49,28 @@ namespace OnePoint.AccountSdk.PanelPanellist
         {
             if (string.IsNullOrEmpty(name) || panelId < 1)
             {
-                return result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { PanelId = panelId, Name = name, Type = (int)type });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddProfileElement", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/AddProfileElement", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new ProfileVariableRootObject(), "ProfileElements");
         }
 
-        public ProfileVariableRootObject DeleteProfileVariable(long panelId, long variableID)
+        public ProfileVariableRootObject DeleteProfileVariable(long panelId, long variableId)
         {
-            if (variableID < 1 || panelId < 1)
+            if (variableId < 1 || panelId < 1)
             {
-                return result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new ProfileVariableRootObject(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { ProfileElementID = variableID, ElementPanelID = panelId });
+            var requestArg = JsonConvert.SerializeObject(new { ProfileElementID = variableId, ElementPanelID = panelId });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/DeleteProfileElement", HttpMethod.Delete, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserPanelPanellists/DeleteProfileElement", HttpMethod.Delete, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new ProfileVariableRootObject(), "ProfileElements");
         }
