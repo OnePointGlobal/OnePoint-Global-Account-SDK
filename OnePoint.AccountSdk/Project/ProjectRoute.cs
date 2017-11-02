@@ -11,7 +11,7 @@ namespace OnePoint.AccountSdk.Project
     public class ProjectRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private AdminRequestHandler RequestHandler { get; }
+        AdminRequestHandler RequestHandler { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Result _result = new Result();
@@ -23,9 +23,9 @@ namespace OnePoint.AccountSdk.Project
 
         public RootObject GetUserProjects()
         {
-            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserProject/GetProjects", HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = this.RequestHandler.SendRequestAsync(string.Empty, "api/UserProject/GetProjects", HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
-            return JsonRead(x.Result);
+            return jsonRead(x.Result);
         }
 
         public RootObject DeleteProject(long projectId)
@@ -49,6 +49,7 @@ namespace OnePoint.AccountSdk.Project
 
             var requestArg = JsonConvert.SerializeObject(new { Name = name, Description = description });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserProject/AddProject", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
 
@@ -71,7 +72,7 @@ namespace OnePoint.AccountSdk.Project
             return x.Result.JsonToObject(new RootObject(), "Projects");
         }
 
-        public byte[] ExportResults(string folderPath, long projectId, int languageId, DateTime? fromDate = null, DateTime? toDate = null, bool factor = false, bool systemVariable = false, bool alldata = false, short OnlyCompletes = 0)
+        public byte[] ExportResults(string folderPath, long projectId, int languageId, DateTime? fromDate = null, DateTime? toDate = null, bool factor = false, bool systemVariable = false, bool alldata = false)
         {
             if (projectId <= 0 || languageId <= 0 || !Directory.Exists(folderPath))
             {
@@ -84,19 +85,19 @@ namespace OnePoint.AccountSdk.Project
                 toDate = DateTime.Now;
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { ProjectID = projectId, FromDate = fromDate, ToDate = toDate, AllData = alldata, LanguageID = languageId, Factor = factor, SystemVariables = systemVariable, OnlyComplete = OnlyCompletes });
+            var requestArg = JsonConvert.SerializeObject(new { ProjectID = projectId, FromDate = fromDate, ToDate = toDate, AllData = alldata, LanguageID = languageId, Factor = factor, SystemVariables = systemVariable });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserProject/ExportProject", HttpMethod.Post, RouteStyle.Download, requestArg);
             x.Wait();
             x.Result.DownloadFile(folderPath + projectId + "_ProjectResult_" + DateTime.Now.ToString("dd/mm/yy") + ".xlsx");
 
             return x.Result.HttpResponse.Content.ReadAsByteArrayAsync().Result;
+
         }
 
-        private static RootObject JsonRead(Result result)
+        private RootObject jsonRead(Result result)
         {
             if (result.IsError) return result.Decoder(new RootObject());
-
             var token = JToken.Parse(result.ObjectResult);
             result.ObjectResult = JsonConvert.SerializeObject(new { Projects = token, IsSuccess = true }); ;
             return result.Decoder(new RootObject());
