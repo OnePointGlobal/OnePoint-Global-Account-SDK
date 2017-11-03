@@ -252,5 +252,18 @@ namespace OnePoint.AccountSdk.Survey
 
             return list;
         }
+
+        public RootObject CheckSurveyReference(string refernce)
+        {
+            if (string.IsNullOrEmpty(refernce))
+            {
+                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+            }
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/CheckSurveyReference?surveyRef=" + refernce, HttpMethod.Get, RouteStyle.Rpc, null);
+            x.Wait();
+
+            return x.Result.JsonToObject(new RootObject(), "Surveys");
+        }
     }
 }
