@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http;
-using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Diagnostics;
 
@@ -14,14 +12,14 @@ namespace OnePoint.AccountSdk.Survey
     public class SurveyRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        AdminRequestHandler requestHandler { get; set; }
+        private AdminRequestHandler RequestHandler { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Result result = new Result();
+        private readonly Result _result = new Result();
 
         public SurveyRoute(AdminRequestHandler hanlder)
         {
-            this.requestHandler = hanlder;
+            RequestHandler = hanlder;
         }
 
         /// <summary>
@@ -30,7 +28,7 @@ namespace OnePoint.AccountSdk.Survey
         /// <returns>All surveys of a user</returns>
         public RootObject GetUserSurveys()
         {
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetSurveys", HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetSurveys", HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
             return x.Result.JsonToObject(new RootObject(), "Surveys");
         }
@@ -44,10 +42,10 @@ namespace OnePoint.AccountSdk.Survey
         {
             if (projectId < 1)
             {
-                return result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetProjectSurveys?projectID=" + projectId, HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetProjectSurveys?projectID=" + projectId, HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
 
             return x.Result.JsonToObject(new RootObject(), "Surveys");
@@ -60,16 +58,16 @@ namespace OnePoint.AccountSdk.Survey
         /// <param name="projectId">The project to which, add a new survey</param>
         /// <param name="type">The Survey Type</param>
         /// <returns></returns>
-        public RootObject AddSurvey(Survey survey, long projectId, SurveyType type)
+        public RootObject AddSurvey(string name, string description, string reference, long projectId, SurveyType type = SurveyType.App, short estimatedTime = 1, bool offline = false)
         {
-            if (survey == null || string.IsNullOrEmpty(survey.Name) || string.IsNullOrEmpty(survey.Description) || string.IsNullOrEmpty(survey.SurveyReference) || projectId == 0)
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) || string.IsNullOrEmpty(reference) || projectId == 0)
             {
-                return result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { SurveyName = survey.Name, SurveyDescription = survey.Description, SurveyChannel = (Int16)type, SurveyReference = survey.SurveyReference, ProjectID = projectId, IsOffline = survey.IsOffline });
+            var requestArg = JsonConvert.SerializeObject(new { SurveyName = name, SurveyDescription = description, SurveyChannel = (short)type, SurveyReference = reference, ProjectID = projectId, IsOffline = offline, EstimateSurvey = estimatedTime });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/AddSurvey", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/AddSurvey", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
 
             return x.Result.JsonToObject(new RootObject(), "Surveys");
@@ -84,10 +82,10 @@ namespace OnePoint.AccountSdk.Survey
         {
             if (surveyids.Count < 1)
             {
-                return result.ErrorToObject(new RootObject(), "Invalid parameter(s)"); ;
+                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)"); ;
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/DeleteSurvey?SurveyIDs=" + String.Join(",", surveyids), HttpMethod.Delete, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/DeleteSurvey?SurveyIDs=" + string.Join(",", surveyids), HttpMethod.Delete, RouteStyle.Rpc, null);
             x.Wait();
 
             return x.Result.JsonToObject(new RootObject(), "Surveys");
@@ -101,16 +99,16 @@ namespace OnePoint.AccountSdk.Survey
         /// <param name="description">the survey description</param>
         /// <param name="type">The survey type</param>
         /// <returns>Updated survey object</returns>
-        public RootObject UpdateSurvey(long surveyId, string name, string description, SurveyType type)
+        public RootObject UpdateSurvey(long surveyId, string name, string description, SurveyType type, short estimatedTime)
         {
             if (surveyId < 1 || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description))
             {
-                return result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { SurveyID = surveyId, Name = name, Description = description, SurveyChannel = (Int16)type, });
+            var requestArg = JsonConvert.SerializeObject(new { SurveyID = surveyId, Name = name, Description = description, SurveyChannel = (short)type, EstimateSurvey = estimatedTime });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/UpdateSurvey", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/UpdateSurvey", HttpMethod.Put, RouteStyle.Rpc, requestArg);
             x.Wait();
 
             return x.Result.JsonToObject(new RootObject(), "Surveys");
@@ -125,10 +123,10 @@ namespace OnePoint.AccountSdk.Survey
         {
             if (surveyId < 1)
             {
-                return result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetSurveyDetail?surveyId=" + String.Join(",", surveyId), HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetSurveyDetail?surveyId=" + String.Join(",", surveyId), HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
 
             return x.Result.JsonToObject(new RootObject(), "Surveys");
@@ -144,10 +142,10 @@ namespace OnePoint.AccountSdk.Survey
         {
             if (surveyId < 1)
             {
-                return result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/CopySurvey?surveyId=" + surveyId, HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/CopySurvey?surveyId=" + surveyId, HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
 
             return x.Result.JsonToObject(new RootObject(), "Surveys");
@@ -180,7 +178,7 @@ namespace OnePoint.AccountSdk.Survey
 
             var requestArg = JsonConvert.SerializeObject(new { SurveyID = surveyId, FromDate = fromDate, ToDate = toDate, AllData = alldata, LanguageID = languageId, Factor = factor, SystemVariables = systemVariable, ReportType = 1, OnlyComplete = 1 });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/ExportSurvey", HttpMethod.Post, RouteStyle.Download, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/ExportSurvey", HttpMethod.Post, RouteStyle.Download, requestArg);
             x.Wait();
             x.Result.DownloadFile(folderPath + surveyId.ToString() + "_SurveyResult_" + DateTime.Now.ToString("ddMMyyyy-HHmm") + ".xlsx");
 
@@ -200,7 +198,7 @@ namespace OnePoint.AccountSdk.Survey
                 return null;
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetTrackingReport?surveyid=" + surveyId, HttpMethod.Get, RouteStyle.Download, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetTrackingReport?surveyid=" + surveyId, HttpMethod.Get, RouteStyle.Download, null);
             x.Wait();
             x.Result.DownloadFile(folderPath + surveyId.ToString() + "_EmailTrackReport" + ".xlsx");
             return x.Result.HttpResponse.Content.ReadAsByteArrayAsync().Result;
@@ -219,7 +217,7 @@ namespace OnePoint.AccountSdk.Survey
             {
                 return null;
             }
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/DownloadInvites?surveyId=" + surveyId + "&InvitationType=" + (int)status, HttpMethod.Get, RouteStyle.Download, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/DownloadInvites?surveyId=" + surveyId + "&InvitationType=" + (int)status, HttpMethod.Get, RouteStyle.Download, null);
             x.Wait();
             x.Result.DownloadFile(folderPath + surveyId.ToString() + "_Invites" + ".xlsx");
             return x.Result.HttpResponse.Content.ReadAsByteArrayAsync().Result;
@@ -240,7 +238,7 @@ namespace OnePoint.AccountSdk.Survey
             var requestArg = JsonConvert.SerializeObject(new { SurveyID = surveyId, FromDate = DateTime.Now.AddYears(-1), ToDate = DateTime.Now.AddDays(1), AllData = true, LanguageID = 49, Factor = false, SystemVariables = false, ReportType = 2, OnlyComplete = 1 });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/DownloadSSS?surveyid=" + surveyId, HttpMethod.Get, RouteStyle.Download, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/DownloadSSS?surveyid=" + surveyId, HttpMethod.Get, RouteStyle.Download, null);
             x.Wait();
 
             var bufferList = x.Result.JsonReadByJarray("_buffer");
