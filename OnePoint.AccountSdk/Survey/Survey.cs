@@ -25,4 +25,19 @@ namespace OnePoint.AccountSdk.Survey
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
     }
+
+    public class SurveySammary
+    {
+        public string ErrorMessage { get; set; }
+        public bool IsSuccess { get; set; }
+        public int AppVisited { get; set; }
+        public int AppDownloaded { get; set; }
+        public int AppSignedIn { get; set; }
+        public int InvitationSentCount { get; set; }
+        public int InvitationDeliveredCount { get; set; }
+        public int InvitationOpenedCount { get; set; }
+        public int InvitationNotDeliveredCount { get; set; }
+        public int PanellistCount { get; set; }
+        public string Waplink { get; set; }
+    }
 }
