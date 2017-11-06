@@ -15,6 +15,7 @@ namespace OnePoint.AccountSdk.Survey
         public int Occurences { get; set; }
         public string SurveyReference { get; set; }
         public int EstimatedTime { get; set; }
+        public int SampleId { get; set; }
         public string CreatedDate { get; set; }
         public string LastUpdatedDate { get; set; }
     }
@@ -39,5 +40,17 @@ namespace OnePoint.AccountSdk.Survey
         public int InvitationNotDeliveredCount { get; set; }
         public int PanellistCount { get; set; }
         public string Waplink { get; set; }
+    }
+
+
+    public class SurveySubEvent
+    {
+        public int Questionnaire { get; set; }
+        public int Sample { get; set; }
+        public int Quota { get; set; }
+        public int Scheduler { get; set; }
+        public int Notification { get; set; }
+        public int RealtimeReporting { get; set; }
+        public bool Isgeofensing { get; set; }
     }
 }
