@@ -265,5 +265,18 @@ namespace OnePoint.AccountSdk.Survey
 
             return x.Result.JsonToObject(new RootObject(), "Surveys");
         }
+
+        public SurveySammary GetSurveySummary(long surveyid)
+        {
+            if (surveyid < 1)
+            {
+                return _result.ErrorToObject(new SurveySammary(), "Invalid parameter(s)");
+            }
+
+            var x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSurvey/GetInvitationCount?surveyId=" + surveyid, HttpMethod.Get, RouteStyle.Rpc, null);
+            x.Wait();
+
+            return x.Result.JsonToObject(new SurveySammary());
+        }
     }
 }
