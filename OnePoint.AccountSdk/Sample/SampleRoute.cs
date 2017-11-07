@@ -10,7 +10,7 @@ namespace OnePoint.AccountSdk.Sample
     public class SampleRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        AdminRequestHandler RequestHandler { get; }
+        private AdminRequestHandler RequestHandler { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Result _result = new Result();
@@ -31,7 +31,6 @@ namespace OnePoint.AccountSdk.Sample
             x.Wait();
 
             return x.Result.JsonToObject(new SampleRootObject());
-
         }
 
         public SampleRootObject AttachSurveyPanels(long surveyId, List<long> panelIds, long sampleId = 0)
@@ -139,19 +138,19 @@ namespace OnePoint.AccountSdk.Sample
 
         }
 
-        public SampleRootObject GetSamplePanellist(long surveyId)
-        {
-            if (surveyId < 1)
-            {
-                return _result.ErrorToObject(new SampleRootObject(), "Invalid parameter(s)");
-            }
+        //public SampleRootObject GetSamplePanellist(long surveyId)
+        //{
+        //    if (surveyId < 1)
+        //    {
+        //        return _result.ErrorToObject(new SampleRootObject(), "Invalid parameter(s)");
+        //    }
 
-            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSample/GetSamplePanellists?SurveyID=" + surveyId, HttpMethod.Get, RouteStyle.Rpc, null);
-            x.Wait();
+        //    Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSample/GetSamplePanellists?SurveyID=" + surveyId, HttpMethod.Get, RouteStyle.Rpc, null);
+        //    x.Wait();
 
-            return x.Result.JsonToObject(new SampleRootObject(), "Filters");
+        //    return x.Result.JsonToObject(new SampleRootObject(), "Filters");
 
-        }
+        //}
 
         public SampleRootObject BlockSamplePanellist(long surveyId, long sampleId, List<long> samplePanellistIds)
         {
@@ -200,6 +199,20 @@ namespace OnePoint.AccountSdk.Sample
             x.Wait();
 
             return x.Result.JsonToObject(new SampleRootObject(), "Panellists");
+        }
+
+        public SampleRootObject UpdateFitler(long surveyId, long sampleQueryElementId, long variableId, SampleOperation operation, SampleOperator Operator, string value)
+        {
+            if (surveyId < 1 || sampleQueryElementId < 1 || variableId < 1 || string.IsNullOrEmpty(value))
+            {
+                return _result.ErrorToObject(new SampleRootObject(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(new { SurveyId = surveyId, SampleQueryElementId = sampleQueryElementId, VariableId = variableId, AndOr = operation.ToString(), OperatorId = (short)Operator, Value = value });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSample/UpdateSampleFilter", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            x.Wait();
+            return x.Result.JsonToObject(new SampleRootObject(), "Filters");
         }
     }
 }
