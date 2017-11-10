@@ -48,7 +48,7 @@ namespace OnePoint.AccountSdk.Sample
             return x.Result.JsonToObject(new SampleRootObject());
         }
 
-        public SampleRootObject DeleteSurveyPanels(long surveyId, long panelId)
+        public SampleRootObject DeAttachSurveyPanels(long surveyId, long panelId)
         {
             if (surveyId < 1 || panelId < 1)
             {

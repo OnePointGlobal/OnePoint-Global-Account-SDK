@@ -42,6 +42,7 @@ namespace OnePoint.AccountSdk.Sample
         public List<Filter> Filters { get; set; }
         public List<PanelPanellist.Panellist> Panellists { get; set; }
         public List<Variable> Variables { get; set; }
+        public long sampleId { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
     }

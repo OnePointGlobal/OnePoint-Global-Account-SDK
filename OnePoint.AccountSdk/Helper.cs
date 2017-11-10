@@ -99,8 +99,8 @@ namespace OnePoint.AccountSdk
 
     public enum SampleOperator
     {
-        Equal = 1,
-        Contains = 2
+        Equal = 5,
+        Contains = 6
     }
 
     public enum SurveyNotificationJobType
@@ -111,22 +111,12 @@ namespace OnePoint.AccountSdk
         InvitationNotDelivered = 4,
         InvitationRead = 5,
         InvitationNotRead = 6,
-        ReminderSent = 7,
-        ReminderNotSent = 8,
-        ReminderDelivered = 9,
-        ReminderNotDelivered = 10,
-        ReminderRead = 11,
-        ReminderNotRead = 12,
-        OtherSent = 13,
-        OtherNotSent = 14,
-        OtherDelivered = 15,
-        OtherNotDelivered = 16,
-        OtherRead = 17,
-        OtherNotRead = 18,
         AppSignedIn = 19,
         AppNotSignedIn = 20,
         AppVisited = 21,
         AppNotVisited = 22,
+        Blocked = 31,
+        UnBlocked = 32
     }
 
     public enum TriggerType
