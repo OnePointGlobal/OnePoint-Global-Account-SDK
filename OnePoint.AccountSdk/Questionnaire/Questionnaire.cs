@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace OnePoint.AccountSdk.Questionnaire
 {
@@ -11,8 +7,8 @@ namespace OnePoint.AccountSdk.Questionnaire
         public object Color { get; set; }
         public object Label { get; set; }
         public string ScriptType { get; set; }
-        public int ScriptID { get; set; }
-        public int UserID { get; set; }
+        public int ScriptId { get; set; }
+        public int UserId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsDeleted { get; set; }
@@ -22,8 +18,8 @@ namespace OnePoint.AccountSdk.Questionnaire
 
     public class ScriptContent
     {
-        public int ScriptContentID { get; set; }
-        public int ScriptID { get; set; }
+        public int ScriptContentId { get; set; }
+        public int ScriptId { get; set; }
         public int Version { get; set; }
         public string Script { get; set; }
         public string ByteCode { get; set; }
