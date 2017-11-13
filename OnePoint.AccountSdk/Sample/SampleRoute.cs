@@ -81,7 +81,7 @@ namespace OnePoint.AccountSdk.Sample
             return x.Result.JsonToObject(new SampleRootObject());
         }
 
-        public SampleRootObject ApplySampleFilter(long surveyId, long sampleId)
+        public SampleRootObject GenerateSamplePanellistByFilter(long surveyId, long sampleId)
         {
             if (surveyId < 1 || sampleId < 1)
             {
@@ -95,6 +95,19 @@ namespace OnePoint.AccountSdk.Sample
             x.Wait();
 
             return x.Result.JsonToObject(new SampleRootObject());
+        }
+
+        public SampleRootObject GenerateSamplePanellistByPanel(long surveyId, long panelId)
+        {
+            if (surveyId < 1 || panelId < 1)
+            {
+                return _result.ErrorToObject(new SampleRootObject(), "Invalid parameter(s)");
+            }
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSample/GenerateSamplePanellist?surveyId=" + surveyId + "&panelId=" + panelId, HttpMethod.Post, RouteStyle.Rpc, null);
+            x.Wait();
+
+            return x.Result.JsonToObject(new SampleRootObject());
+
         }
 
         public SampleRootObject DeleteSampleFilter(long sampleQueryElementId)
