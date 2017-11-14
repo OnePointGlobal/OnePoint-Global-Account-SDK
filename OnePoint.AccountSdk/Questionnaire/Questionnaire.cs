@@ -8,7 +8,6 @@ namespace OnePoint.AccountSdk.Questionnaire
         public object Label { get; set; }
         public string ScriptType { get; set; }
         public int ScriptId { get; set; }
-        public int UserId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsDeleted { get; set; }
@@ -20,7 +19,6 @@ namespace OnePoint.AccountSdk.Questionnaire
     {
         public int ScriptContentId { get; set; }
         public int ScriptId { get; set; }
-        public int Version { get; set; }
         public string Script { get; set; }
         public string ByteCode { get; set; }
         public bool Included { get; set; }
@@ -30,14 +28,14 @@ namespace OnePoint.AccountSdk.Questionnaire
         public string FileType { get; set; }
     }
 
-    public class RootObject
+    public class Questionnaire
     {
         public List<Script> Scripts { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
     }
 
-    public class RootObjectScript
+    public class ScriptRoot
     {
         public Script Script { get; set; }
         public ScriptContent ScriptContent { get; set; }
