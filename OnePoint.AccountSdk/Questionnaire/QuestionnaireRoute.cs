@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OnePoint.AccountSdk.Questionnaire
 {
-    public partial class QuestionnaireRoute
+    public class QuestionnaireRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private AdminRequestHandler RequestHandler { get; }
