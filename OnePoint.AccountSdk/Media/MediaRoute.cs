@@ -14,63 +14,68 @@ namespace OnePoint.AccountSdk.Media
         AdminRequestHandler RequestHandler { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Result _result = new Result();
+        private readonly Result _result = new Result();
 
         public MediaRoute(AdminRequestHandler hanlder)
         {
             RequestHandler = hanlder;
         }
 
-        public RootObject AddMedia(string name, string description, string filePath)
+        public MediaRoot AddMedia(string name, string description, string filePath)
         {
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description))
             {
-                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new MediaRoot(), "Invalid parameter(s)");
             }
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserMedia/AddMedia?Name=" + name + "&Description=" + description, HttpMethod.Post, RouteStyle.Upload, filePath);
             x.Wait();
 
-            return x.Result.JsonToObject(new RootObject(), "Media");
+            return x.Result.JsonToObject(new MediaRoot(), "Media");
         }
 
-        public RootObject GetMedia(long mediaId)
+        public MediaRoot GetMedia(long mediaId)
         {
             if (mediaId < 1)
             {
-                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new MediaRoot(), "Invalid parameter(s)");
             }
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserMedia/GetMediaDetails?mediaId=" + mediaId, HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
 
-            return x.Result.JsonToObject(new RootObject(), "Media");
+            return x.Result.JsonToObject(new MediaRoot(), "Media");
         }
 
-        public RootObject GetAllMedia()
+        public MediaRoot GetAllMedia()
         {
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserMedia/GetMedia", HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
 
-            return x.Result.JsonToObject(new RootObject(), "Media");
+            return x.Result.JsonToObject(new MediaRoot(), "Media");
         }
 
-        public RootObject UpdateMedia(long mediaId, string filePath, string name, string description)
+        public MediaRoot UpdateMedia(long mediaId, string name, string description, string filePath = "")
         {
-            if (mediaId < 1 || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) || !File.Exists(filePath))
+            if (mediaId < 1 || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description))
             {
-                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new MediaRoot(), "Invalid parameter(s)");
+            }
+
+            if (!string.IsNullOrEmpty(filePath) && !File.Exists(filePath))
+            {
+                return _result.ErrorToObject(new MediaRoot(), "Invalid filepath!");
             }
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserMedia/UpdateMedia?mediaID=" + mediaId + "&Name=" + name + "&Description=" + description, HttpMethod.Put, RouteStyle.Upload, filePath);
             x.Wait();
-            return x.Result.JsonToObject(new RootObject(), "Media");
+            return x.Result.JsonToObject(new MediaRoot(), "Media");
         }
 
-        public RootObject DeleteMedia(List<long> mediaId)
+        public MediaRoot DeleteMedia(List<long> mediaId)
         {
             if (mediaId.Count < 1)
             {
-                return _result.ErrorToObject(new RootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new MediaRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { deleteMediaIDs = String.Join(",", mediaId) });
@@ -78,7 +83,7 @@ namespace OnePoint.AccountSdk.Media
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserMedia/DeleteMedia", HttpMethod.Delete, RouteStyle.Rpc, requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new RootObject(), "Media");
+            return x.Result.JsonToObject(new MediaRoot(), "Media");
         }
     }
 }
