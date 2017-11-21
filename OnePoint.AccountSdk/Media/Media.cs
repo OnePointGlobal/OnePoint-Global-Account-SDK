@@ -18,7 +18,7 @@ namespace OnePoint.AccountSdk.Media
         public string MediaUrl { get; set; }
     }
 
-    public class RootObject
+    public class MediaRoot
     {
         public List<Media> Media { get; set; }
         public string ErrorMessage { get; set; }
