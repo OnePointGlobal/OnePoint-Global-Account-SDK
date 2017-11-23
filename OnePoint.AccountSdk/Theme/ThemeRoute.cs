@@ -66,6 +66,23 @@ namespace OnePoint.AccountSdk.Theme
             return x.Result.JsonToObject(new ThemeRoot(), "Themes");
         }
 
+        public ThemeRoot UpdateTheme(string name, long themeTemplateID)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return _result.ErrorToObject(new ThemeRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(new { Name = name, themeTemplateId = themeTemplateID });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserTheme/UpdateTheme", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new ThemeRoot(), "Themes");
+        }
+
+
 
         public ThemeListRoot SaveAppTheme(long themeTemplateID, string actionButton, string logoText, string linksColor)
         {
