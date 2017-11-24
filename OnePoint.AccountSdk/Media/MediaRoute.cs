@@ -28,6 +28,11 @@ namespace OnePoint.AccountSdk.Media
                 return _result.ErrorToObject(new MediaRoot(), "Invalid parameter(s)");
             }
 
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                return _result.ErrorToObject(new MediaRoot(), "File does not exist!");
+            }
+
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserMedia/AddMedia?Name=" + name + "&Description=" + description, HttpMethod.Post, RouteStyle.Upload, filePath);
             x.Wait();
 
