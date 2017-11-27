@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace OnePoint.AccountSdk.Theme
 {
@@ -82,19 +84,42 @@ namespace OnePoint.AccountSdk.Theme
             return x.Result.JsonToObject(new ThemeRoot(), "Themes");
         }
 
-
-
-        public ThemeListRoot SaveAppTheme(long themeTemplateID, string actionButton, string logoText, string linksColor)
+        public ThemeListRoot SaveAppTheme(long themeTemplateID, string actionButton, string linksColor, string logoText = "", string headerLogoFilePath = "", string loginBackgroundFilePath = "")
         {
-            if (themeTemplateID <= 0 || string.IsNullOrEmpty(actionButton) || string.IsNullOrEmpty(logoText) || string.IsNullOrEmpty(linksColor))
+            if (themeTemplateID <= 0 || string.IsNullOrEmpty(actionButton) || string.IsNullOrEmpty(linksColor))
             {
                 return _result.ErrorToObject(new ThemeListRoot(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserTheme/SaveAppTheme?themeTemplateId=" + themeTemplateID + "&Actionbtn=" + actionButton + "&Logotext=" + logoText + "&Linkscolor=" + linksColor, HttpMethod.Post, RouteStyle.Rpc, null);
-            x.Wait();
-            return x.Result.JsonToObject(new ThemeListRoot(), "ThemeList");
+            var files = string.Empty;
+            var routeStyle = RouteStyle.Rpc;
 
+            if (!string.IsNullOrEmpty(headerLogoFilePath))
+            {
+                if (!File.Exists(headerLogoFilePath))
+                {
+                    return _result.ErrorToObject(new ThemeListRoot(), "Invalid headerLogoFilePath parameter!");
+                }
+                routeStyle = RouteStyle.Upload;
+                var logoimage = Helper.MoveFile(headerLogoFilePath, "theme-headerlogo"); //File name must contains 'headerlogo' keyword.
+                files = logoimage + ";";
+            }
+
+            if (!string.IsNullOrEmpty(loginBackgroundFilePath))
+            {
+                if (!File.Exists(loginBackgroundFilePath))
+                {
+                    return _result.ErrorToObject(new ThemeListRoot(), "Invalid loginBackgroundFilePath parameter!");
+                }
+                routeStyle = RouteStyle.Upload;
+                var bkgImage = Helper.MoveFile(loginBackgroundFilePath, "theme-loginbackground"); //File name must contains 'loginbackground' keyword.
+                files = files + bkgImage;
+            }
+
+            Task<Result> x2 = RequestHandler.SendRequestAsync(string.Empty, "api/UserTheme/SaveAppTheme?themeTemplateId=" + themeTemplateID +
+                            "&Actionbtn=" + WebUtility.UrlEncode(actionButton) + "&Linkscolor=" + WebUtility.UrlEncode(linksColor) + "&useDefault=0" + "&Logotext=" + logoText, HttpMethod.Post, routeStyle, string.IsNullOrEmpty(files) ? null : files);
+            x2.Wait();
+            return x2.Result.JsonToObject(new ThemeListRoot(), "ThemeList");
         }
 
         public ThemeListRoot SaveAdminTheme(long themeTemplateID, string brandColor, string secondaryColor, string logoText)
