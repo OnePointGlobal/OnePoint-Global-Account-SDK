@@ -122,17 +122,41 @@ namespace OnePoint.AccountSdk.Theme
             return x2.Result.JsonToObject(new ThemeListRoot(), "ThemeList");
         }
 
-        public ThemeListRoot SaveAdminTheme(long themeTemplateID, string brandColor, string secondaryColor, string logoText)
+        public ThemeListRoot SaveAdminTheme(long themeTemplateID, string brandColor, string secondaryColor, string logoText = "", string headerLogoFilePath = "", string loginBackgroundFilePath = "")
         {
-            if (themeTemplateID <= 0 || string.IsNullOrEmpty(brandColor) || string.IsNullOrEmpty(logoText) || string.IsNullOrEmpty(secondaryColor))
+            if (themeTemplateID <= 0 || string.IsNullOrEmpty(brandColor) || string.IsNullOrEmpty(secondaryColor))
             {
                 return _result.ErrorToObject(new ThemeListRoot(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserTheme/SaveAdminTheme?themeTemplateId=" + themeTemplateID + "&Brandcolor=" + brandColor + "&Secondarycolor=" + secondaryColor + "&Logotext=" + logoText, HttpMethod.Post, RouteStyle.Rpc, null);
+            var files = string.Empty;
+            var routeStyle = RouteStyle.Rpc;
+
+            if (!string.IsNullOrEmpty(headerLogoFilePath))
+            {
+                if (!File.Exists(headerLogoFilePath))
+                {
+                    return _result.ErrorToObject(new ThemeListRoot(), "Invalid headerLogoFilePath parameter!");
+                }
+                routeStyle = RouteStyle.Upload;
+                var logoimage = Helper.MoveFile(headerLogoFilePath, "admintheme-logo"); //File name must contains 'logo' keyword.
+                files = logoimage + ";";
+            }
+
+            if (!string.IsNullOrEmpty(loginBackgroundFilePath))
+            {
+                if (!File.Exists(loginBackgroundFilePath))
+                {
+                    return _result.ErrorToObject(new ThemeListRoot(), "Invalid loginBackgroundFilePath parameter!");
+                }
+                routeStyle = RouteStyle.Upload;
+                var bkgImage = Helper.MoveFile(loginBackgroundFilePath, "admintheme-pageloader"); //File name must contains 'pagaloader' keyword.
+                files = files + bkgImage;
+            }
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserTheme/SaveAdminTheme?themeTemplateId=" + themeTemplateID + "&Brandcolor=" + WebUtility.UrlEncode(brandColor) + "&Secondarycolor=" + WebUtility.UrlEncode(secondaryColor) + "&useDefault=0" + "&Logotext=" + logoText, HttpMethod.Post, routeStyle, string.IsNullOrEmpty(files) ? null : files);
             x.Wait();
             return x.Result.JsonToObject(new ThemeListRoot(), "ThemeList");
-
         }
     }
 }
