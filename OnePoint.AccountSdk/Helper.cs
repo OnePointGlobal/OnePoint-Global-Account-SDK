@@ -177,6 +177,11 @@ namespace OnePoint.AccountSdk
         Adminsuite = 2
     }
 
+    public enum EmailTemplateType
+    {
+        Email = 0,
+        PanellistPasswordReset = 1
+    }
 
     public static class Helper
     {

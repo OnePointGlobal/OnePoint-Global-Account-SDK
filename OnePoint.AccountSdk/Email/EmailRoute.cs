@@ -34,7 +34,23 @@ namespace OnePoint.AccountSdk.Email
                 return _result.ErrorToObject(new EmailRoot(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { Name = name, Description = description, EmailContent = emailContent, Subject = subject });
+            var requestArg = JsonConvert.SerializeObject(new { Name = name, Description = description, EmailContent = emailContent, Subject = subject, EmailTemplateType = (short)EmailTemplateType.Email });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserEmail/AddTemplate", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new EmailRoot(), "EmailTemplates");
+        }
+
+        public EmailRoot AddPanellistResetPasswordTemplate(string name, string description, string subject, string emailContent)
+        {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) || string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(emailContent))
+            {
+                return _result.ErrorToObject(new EmailRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(new { Name = name, Description = description, EmailContent = emailContent, Subject = subject, EmailTemplateType = (short)EmailTemplateType.PanellistPasswordReset });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserEmail/AddTemplate", HttpMethod.Post, RouteStyle.Rpc, requestArg);
