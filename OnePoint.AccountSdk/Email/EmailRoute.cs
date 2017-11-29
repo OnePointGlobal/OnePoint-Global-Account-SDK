@@ -119,5 +119,12 @@ namespace OnePoint.AccountSdk.Email
 
             return x.Result.JsonToObject(new EmailRoot(), "EmailTemplates");
         }
+
+        public PanellistProfileFields GetSpecialFilds(long surveyId = 0)
+        {
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserEmail/GetSpecialFields?surveyID=" + surveyId, HttpMethod.Get, RouteStyle.Rpc, null);
+            x.Wait();
+            return x.Result.JsonToObject(new PanellistProfileFields());
+        }
     }
 }

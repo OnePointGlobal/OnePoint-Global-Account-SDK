@@ -21,4 +21,11 @@ namespace OnePoint.AccountSdk.Email
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
     }
+
+    public class PanellistProfileFields
+    {
+        public List<string> SpecialFields { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool IsSuccess { get; set; }
+    }
 }
