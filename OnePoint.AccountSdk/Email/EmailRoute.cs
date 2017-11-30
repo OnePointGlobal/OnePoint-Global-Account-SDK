@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -115,6 +116,27 @@ namespace OnePoint.AccountSdk.Email
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserEmail/SendEmail", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new EmailRoot(), "EmailTemplates");
+        }
+
+        public EmailRoot EmailPanellist(long panelId, long panellistId, string emailSubject, string emailBody)
+        {
+            if (string.IsNullOrEmpty(emailSubject) || string.IsNullOrEmpty(emailBody))
+            {
+                return _result.ErrorToObject(new EmailRoot(), "Invalid parameter(s)");
+            }
+
+            if (panelId < 1 || panellistId < 1)
+            {
+                return _result.ErrorToObject(new EmailRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(new { panelID = panelId, panellistID = panellistId, subject = emailSubject, body = emailBody });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserEmail/EmailPanellist", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
 
             return x.Result.JsonToObject(new EmailRoot(), "EmailTemplates");
