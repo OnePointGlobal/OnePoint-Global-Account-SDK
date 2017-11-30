@@ -105,14 +105,16 @@ namespace OnePoint.AccountSdk.Email
             return x.Result.JsonToObject(new EmailRoot(), "EmailTemplates");
         }
 
-        public EmailRoot SendEmail(string emailIds, long surveyId, EmailType emailType, long emailServerId, string subject, string emailContent)
+        public EmailRoot SendEmail(List<string> emailIds, long surveyId, EmailType emailType, string emailSubject, string emailBody, long emailServerId = 0)
         {
-            if (string.IsNullOrEmpty(emailIds) || string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(emailContent) || emailServerId < 1)
+            if (emailIds.Count < 1 || string.IsNullOrEmpty(emailSubject) || string.IsNullOrEmpty(emailBody))
             {
                 return _result.ErrorToObject(new EmailRoot(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { SurveyID = surveyId, EmailTemplateID = 0, EmailServerId = emailServerId, EmailAddress = emailIds, EmailType = emailType, Subject = subject, EmailBody = emailContent });
+            var ids = string.Join(",", emailIds);
+
+            var requestArg = JsonConvert.SerializeObject(new { SurveyID = surveyId, EmailServerId = emailServerId, EmailAddress = ids, EmailType = emailType, Subject = emailSubject, EmailBody = emailBody });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserEmail/SendEmail", HttpMethod.Post, RouteStyle.Rpc, requestArg);
