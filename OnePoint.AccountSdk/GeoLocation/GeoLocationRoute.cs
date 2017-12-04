@@ -58,10 +58,20 @@ namespace OnePoint.AccountSdk.GeoLocation
             return x.Result.JsonToObject(new GeoRootObject(), "GeoLocations");
         }
 
-        //public GeoRootObject UpdateGeoLcoationList() 
-        //{
+        public GeoRootObject UpdateGeoLcoationList(int addressListId, string name, string description)
+        {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) | addressListId < 1)
+            {
+                return _result.ErrorToObject(new GeoRootObject(), "Invalid parameter(s)");
+            }
 
-        //}
+            var requestArg = JsonConvert.SerializeObject(new { EditGeolocationName = name, EditGeolocationDescription = description, AddressListID = addressListId });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/UpdateGeolocationList", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new GeoRootObject(), "GeoLocations");
+        }
 
         public AddressRootObject GetGeoListAddresses(long addressListID)
         {
