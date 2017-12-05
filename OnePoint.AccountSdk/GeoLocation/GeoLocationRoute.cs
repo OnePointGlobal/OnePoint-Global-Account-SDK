@@ -11,7 +11,7 @@ namespace OnePoint.AccountSdk.GeoLocation
     public class GeoLocationRoute
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        AdminRequestHandler RequestHandler { get; }
+        private AdminRequestHandler RequestHandler { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Result _result = new Result();
@@ -73,14 +73,14 @@ namespace OnePoint.AccountSdk.GeoLocation
             return x.Result.JsonToObject(new GeoRootObject(), "GeoLocations");
         }
 
-        public AddressRootObject GetGeoListAddresses(long addressListID)
+        public AddressRootObject GetGeoLocationAddresses(long addressListId)
         {
-            if (addressListID < 1)
+            if (addressListId < 1)
             {
                 return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/GetAllAddresses?AddressListId=" + addressListID, HttpMethod.Get, RouteStyle.Rpc, null);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/GetAllAddresses?AddressListId=" + addressListId, HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
             return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
 
@@ -113,6 +113,21 @@ namespace OnePoint.AccountSdk.GeoLocation
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/AddAddressesIndividual", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
+            return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
+        }
+
+        public AddressRootObject UpdateAddress(long addressId, string fullAddress, double latitude = 0, double longitude = 0)
+        {
+            if (string.IsNullOrEmpty(fullAddress) || addressId < 1)
+            {
+                return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(new { AddressId = addressId, AddressName = fullAddress, Latitude = latitude, Longitude = longitude });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/UpdateAddressList", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
             return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
         }
 
