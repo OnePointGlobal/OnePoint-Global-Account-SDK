@@ -131,32 +131,33 @@ namespace OnePoint.AccountSdk.GeoLocation
             return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
         }
 
-        public AddressRootObject UploadAddress(long GeoLocationListId, string filePath)
+        public AddressRootObject UploadAddress(long geoLocationListId, string filePath)
         {
-            if (GeoLocationListId < 1 || !File.Exists(filePath))
+            if (geoLocationListId < 1 || !File.Exists(filePath))
             {
                 return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/ImportFileGeolocation?addressListID=" + GeoLocationListId, HttpMethod.Post, RouteStyle.Upload, filePath);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/ImportFileGeolocation?addressListID=" + geoLocationListId, HttpMethod.Post, RouteStyle.Upload, filePath);
             x.Wait();
 
             return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
         }
 
-        public byte[] DownloadAddress(long addressListID, string downloadFolderPath)
+        public byte[] DownloadAddress(long addressListId, string downloadFolderPath)
         {
-            if (addressListID < 1)
+            if (addressListId < 1 || !Directory.Exists(downloadFolderPath))
             {
                 return null;
             }
-            var requestArg = JsonConvert.SerializeObject(new { addresslistid = addressListID });
+
+            var requestArg = JsonConvert.SerializeObject(new { addresslistid = addressListId });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/ExportFileGeolocation", HttpMethod.Post, RouteStyle.Download, requestArg);
             x.Wait();
 
-            x.Result.DownloadFile(downloadFolderPath + addressListID.ToString() + "_GeoLocations.xlsx");
+            x.Result.DownloadFile(downloadFolderPath + addressListId + "_GeoLocations.xlsx");
             return x.Result.HttpResponse.Content.ReadAsByteArrayAsync().Result;
         }
     }
