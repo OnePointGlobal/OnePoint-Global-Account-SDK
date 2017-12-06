@@ -101,17 +101,17 @@ namespace OnePoint.AccountSdk.GeoLocation
             return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
         }
 
-        public AddressRootObject AddAddress(string fullAddress, long addressListID)
+        public AddressRootObject AddAddress(long addressListId, string fullAddress, double latitude = 0, double longitude = 0)
         {
-            if (addressListID < 1 || string.IsNullOrEmpty(fullAddress))
+            if (addressListId < 1 || string.IsNullOrEmpty(fullAddress))
             {
                 return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
             }
 
-            var requestArg = JsonConvert.SerializeObject(new { AddresslistId = addressListID, AddressName = fullAddress });
+            var requestArg = JsonConvert.SerializeObject(new { AddresslistId = addressListId, AddressName = fullAddress, Latitude = latitude, Longitude = longitude });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
 
-            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/AddAddressesIndividual", HttpMethod.Post, RouteStyle.Rpc, requestArg);
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/AddAddressLatiLong", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
             return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
         }
