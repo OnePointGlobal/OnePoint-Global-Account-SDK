@@ -55,6 +55,7 @@
     <Compile Include="Common\CommonRoute.cs" />
     <Compile Include="Email\Email.cs" />
     <Compile Include="Email\EmailRoute.cs" />
+    <Compile Include="GeoLocation\GeoFencingRoute.cs" />
     <Compile Include="GeoLocation\GeoLocation.cs" />
     <Compile Include="GeoLocation\GeoLocationRoute.cs" />
     <Compile Include="Helper.cs" />

@@ -28,10 +28,11 @@ namespace OnePoint.AccountSdk
         public PanellistRoute Panellist { get; private set; }
         public ProfileElementRoute ProfileElement { get; private set; }
         public GeoLocationRoute GeoLocation { get; private set; }
+        public GeoFencingRoute GeoFence { get; private set; }
         public SampleRoute Sample { get; private set; }
         public ThemeRoute Theme { get; private set; }
         public SchedulerRoute Scheduler { get; private set; }
-        
+
         public AdminClient()
         {
             this.InitializeHandler("live");
@@ -70,6 +71,7 @@ namespace OnePoint.AccountSdk
             Panellist = new PanellistRoute(handler);
             ProfileElement = new ProfileElementRoute(handler);
             GeoLocation = new GeoLocationRoute(handler);
+            GeoFence = new GeoFencingRoute(handler);
             Sample = new SampleRoute(handler);
             Theme = new ThemeRoute(handler);
             Scheduler = new SchedulerRoute(handler);
