@@ -21,18 +21,18 @@ namespace OnePoint.AccountSdk.GeoLocation
             RequestHandler = hanlder;
         }
 
-        public GeoRootObject GetGeoLocationList()
+        public GeoRoot GetGeoLocationList()
         {
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/GetAllGeolocationList", HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
-            return x.Result.JsonToObject(new GeoRootObject(), "GeoLocations");
+            return x.Result.JsonToObject(new GeoRoot(), "GeoLocations");
         }
 
-        public GeoRootObject AddGeoLocationList(string name, string description)
+        public GeoRoot AddGeoLocationList(string name, string description)
         {
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description))
             {
-                return _result.ErrorToObject(new GeoRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new GeoRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { GeolocationName = name, GeolocationDescription = description });
@@ -40,14 +40,14 @@ namespace OnePoint.AccountSdk.GeoLocation
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/AddGeolocationList", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new GeoRootObject(), "GeoLocations");
+            return x.Result.JsonToObject(new GeoRoot(), "GeoLocations");
         }
 
-        public GeoRootObject DeleteGeoLocations(List<long> addressListIds)
+        public GeoRoot DeleteGeoLocations(List<long> addressListIds)
         {
             if (addressListIds.Count < 1)
             {
-                return _result.ErrorToObject(new GeoRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new GeoRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { AddressListIds = String.Join(",", addressListIds) });
@@ -55,14 +55,14 @@ namespace OnePoint.AccountSdk.GeoLocation
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/DeleteGeolocationList", HttpMethod.Delete, RouteStyle.Rpc, requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new GeoRootObject(), "GeoLocations");
+            return x.Result.JsonToObject(new GeoRoot(), "GeoLocations");
         }
 
-        public GeoRootObject UpdateGeoLcoationList(int addressListId, string name, string description)
+        public GeoRoot UpdateGeoLcoationList(int addressListId, string name, string description)
         {
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) | addressListId < 1)
             {
-                return _result.ErrorToObject(new GeoRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new GeoRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { EditGeolocationName = name, EditGeolocationDescription = description, AddressListID = addressListId });
@@ -70,27 +70,27 @@ namespace OnePoint.AccountSdk.GeoLocation
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/UpdateGeolocationList", HttpMethod.Put, RouteStyle.Rpc, requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new GeoRootObject(), "GeoLocations");
+            return x.Result.JsonToObject(new GeoRoot(), "GeoLocations");
         }
 
-        public AddressRootObject GetGeoLocationAddresses(long addressListId)
+        public AddressRoot GetGeoLocationAddresses(long addressListId)
         {
             if (addressListId < 1)
             {
-                return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new AddressRoot(), "Invalid parameter(s)");
             }
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/GetAllAddresses?AddressListId=" + addressListId, HttpMethod.Get, RouteStyle.Rpc, null);
             x.Wait();
-            return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
+            return x.Result.JsonToObject(new AddressRoot(), "GeoAddresses");
 
         }
 
-        public AddressRootObject DeleteAddress(List<long> addressIds)
+        public AddressRoot DeleteAddress(List<long> addressIds)
         {
             if (addressIds.Count < 1)
             {
-                return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new AddressRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { AddressIds = String.Join(",", addressIds) });
@@ -98,14 +98,14 @@ namespace OnePoint.AccountSdk.GeoLocation
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/DeleteAddresses", HttpMethod.Delete, RouteStyle.Rpc, requestArg);
             x.Wait();
-            return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
+            return x.Result.JsonToObject(new AddressRoot(), "GeoAddresses");
         }
 
-        public AddressRootObject AddAddress(long addressListId, string fullAddress, double latitude = 0, double longitude = 0)
+        public AddressRoot AddAddress(long addressListId, string fullAddress, double latitude = 0, double longitude = 0)
         {
             if (addressListId < 1 || string.IsNullOrEmpty(fullAddress))
             {
-                return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new AddressRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { AddresslistId = addressListId, AddressName = fullAddress, Latitude = latitude, Longitude = longitude });
@@ -113,14 +113,14 @@ namespace OnePoint.AccountSdk.GeoLocation
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/AddAddressLatiLong", HttpMethod.Post, RouteStyle.Rpc, requestArg);
             x.Wait();
-            return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
+            return x.Result.JsonToObject(new AddressRoot(), "GeoAddresses");
         }
 
-        public AddressRootObject UpdateAddress(long addressId, string fullAddress, double latitude = 0, double longitude = 0)
+        public AddressRoot UpdateAddress(long addressId, string fullAddress, double latitude = 0, double longitude = 0)
         {
             if (string.IsNullOrEmpty(fullAddress) || addressId < 1)
             {
-                return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new AddressRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(new { AddressId = addressId, AddressName = fullAddress, Latitude = latitude, Longitude = longitude });
@@ -128,20 +128,20 @@ namespace OnePoint.AccountSdk.GeoLocation
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/UpdateAddressList", HttpMethod.Put, RouteStyle.Rpc, requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
+            return x.Result.JsonToObject(new AddressRoot(), "GeoAddresses");
         }
 
-        public AddressRootObject UploadAddress(long geoLocationListId, string filePath)
+        public AddressRoot UploadAddress(long geoLocationListId, string filePath)
         {
             if (geoLocationListId < 1 || !File.Exists(filePath))
             {
-                return _result.ErrorToObject(new AddressRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new AddressRoot(), "Invalid parameter(s)");
             }
 
             Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeolocation/ImportFileGeolocation?addressListID=" + geoLocationListId, HttpMethod.Post, RouteStyle.Upload, filePath);
             x.Wait();
 
-            return x.Result.JsonToObject(new AddressRootObject(), "GeoAddresses");
+            return x.Result.JsonToObject(new AddressRoot(), "GeoAddresses");
         }
 
         public byte[] DownloadAddress(long addressListId, string downloadFolderPath)

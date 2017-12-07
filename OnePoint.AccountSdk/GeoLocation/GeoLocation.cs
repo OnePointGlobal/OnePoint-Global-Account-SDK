@@ -42,16 +42,39 @@ namespace OnePoint.AccountSdk.GeoLocation
         public string LastUpdatedDate { get; set; }
     }
 
-    public class AddressRootObject
+    public class AddressRoot
     {
         public List<GeoAddress> GeoAddresses { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
     }
 
-    public class GeoRootObject
+    public class GeoRoot
     {
         public List<GeoLocation> GeoLocations { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool IsSuccess { get; set; }
+    }
+
+    public class GeoFencing
+    {
+        public int AddressCount { get; set; }
+        public int Range { get; set; }
+        public int SurveyAddressId { get; set; }
+        public bool EnterEvent { get; set; }
+        public bool ExitEvent { get; set; }
+        public int EventTime { get; set; }
+        public int AddressListId { get; set; }
+        public string Description { get; set; }
+        public string Name { get; set; }
+        public string CreatedDate { get; set; }
+        public string LastUpdatedDate { get; set; }
+        public bool IsDeleted { get; set; }
+    }
+
+    public class GeoFencingRoot
+    {
+        public List<GeoFencing> GeoFencing { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
     }
