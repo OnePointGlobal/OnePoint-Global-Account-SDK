@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace OnePoint.AccountSdk.GeoLocation
 {
@@ -33,10 +34,35 @@ namespace OnePoint.AccountSdk.GeoLocation
             return x.Result.JsonToObject(new GeoFencingRoot(), "GeoFencing");
         }
 
-        public void AddSurveyGeoFencing()
+        public GeoFencingRoot AddSurveyGeoFencing(long surveyId, long addressListId, bool enterEvent, bool existEvent, short eventTimeInMinutes = 0, short rangeInMeter = 100)
         {
-            //Undeer developement.
+            if (surveyId < 1 || addressListId < 1 || rangeInMeter < 0 || eventTimeInMinutes < 0)
+            {
+                return _result.ErrorToObject(new GeoFencingRoot(), "Invalid parameter(s)");
+            }
 
+            var requestArg = JsonConvert.SerializeObject(new { AddressListID = addressListId, SurveyID = surveyId, EnterEvent = enterEvent, ExitEvent = existEvent, EventTime = eventTimeInMinutes, Range = rangeInMeter });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeofencing/UpdateGeofencing", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new GeoFencingRoot(), "GeoFencing");
+        }
+
+
+        public GeoFencingRoot UpdateSurveyGeoFencing(long surveyId, long addressListId, bool enterEvent, bool existEvent, short eventTimeInMinutes = 0, short rangeInMeter = 100)
+        {
+            if (surveyId < 1 || addressListId < 1 || rangeInMeter < 0 || eventTimeInMinutes < 0)
+            {
+                return _result.ErrorToObject(new GeoFencingRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(new { AddressListID = addressListId, SurveyID = surveyId, EnterEvent = enterEvent, ExitEvent = existEvent, EventTime = eventTimeInMinutes, Range = rangeInMeter });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeofencing/UpdateGeofencing", HttpMethod.Put, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new GeoFencingRoot(), "GeoFencing");
         }
 
         public void DeleteSurveyGeoFencing()
