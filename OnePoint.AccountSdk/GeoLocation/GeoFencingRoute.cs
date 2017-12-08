@@ -65,9 +65,19 @@ namespace OnePoint.AccountSdk.GeoLocation
             return x.Result.JsonToObject(new GeoFencingRoot(), "GeoFencing");
         }
 
-        public void DeleteSurveyGeoFencing()
+        public GeoFencingRoot DeleteSurveyGeoFencing(long surveyId)
         {
-            //Under developement.
+            if (surveyId < 1)
+            {
+                return _result.ErrorToObject(new GeoFencingRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(new { SurveyID = surveyId });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserGeofencing/DeleteSurveyGeofencing", HttpMethod.Delete, RouteStyle.Rpc, requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new GeoFencingRoot(), "GeoFencing");
 
         }
     }
