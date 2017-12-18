@@ -1,35 +1,36 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AppConfig.cs" company="OnePoint Global Ltd">
-//   Copyright 2012 OnePoint Global Ltd. All rights reserved.
+//    Copyright (c) 2017 OnePoint Global Ltd. All rights reserved.
 // </copyright>
 // <summary>
-//   The app config.
+//   The app config class, manages the configuration keys.
+//   Provides the code to get config key's value.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace OnePoint.AccountSdk
 {
-    using System;
     using System.Configuration;
-    using System.Reflection;
 
     /// <summary>
-    /// The app config.
+    ///     The app config.
     /// </summary>
     internal class AppConfig
     {
         #region Constants
 
         /// <summary>
-        /// The confi g_ emai l_ medi a_ folder.
+        /// The confg hostname.
         /// </summary>
         private const string CONFIG_HOSTNAME = "hostname";
-
 
         #endregion
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets the api host name, from config key.
+        /// </summary>
         public static string HostName
         {
             get
