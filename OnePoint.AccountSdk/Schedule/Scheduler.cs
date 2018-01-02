@@ -9,9 +9,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OnePoint.AccountSdk.Schedule
 {
@@ -89,7 +86,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <summary>
         /// Gets or sets the job detail id.
         /// </summary>
-        public int JobDetailID { get; set; }
+        public int JobDetailId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
@@ -104,7 +101,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <summary>
         /// Gets or sets the job id.
         /// </summary>
-        public int JobID { get; set; }
+        public int JobId { get; set; }
 
         /// <summary>
         /// Gets or sets the job type.
@@ -115,11 +112,6 @@ namespace OnePoint.AccountSdk.Schedule
         /// Gets or sets the status.
         /// </summary>
         public int Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user id.
-        /// </summary>
-        public int UserID { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether is deleted.
@@ -502,7 +494,7 @@ namespace OnePoint.AccountSdk.Schedule
     /// <summary>
     /// The scheduler root object.
     /// </summary>
-    public class SchedulerRootObject
+    public class SchedulerRoot
     {
         /// <summary>
         /// Gets or sets the schedules.

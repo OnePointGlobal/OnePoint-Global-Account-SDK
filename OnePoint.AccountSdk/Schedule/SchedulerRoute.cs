@@ -7,36 +7,32 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-
 using Newtonsoft.Json;
 
 namespace OnePoint.AccountSdk.Schedule
 {
     /// <summary>
-    /// The scheduler route.
+    /// The scheduler route class, provides the code for CRUD operation on survey invitation and notification data.
+    /// This class has all required methods to set up survey schedule by sms or email medium.
     /// </summary>
     public class SchedulerRoute
     {
         /// <summary>
-        /// Gets or sets the request handler.
-        /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        AdminRequestHandler requestHandler { get; set; }
-
-        /// <summary>
         /// The result.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Result result = new Result();
+        private readonly Result _result = new Result();
+
+        /// <summary>
+        /// Gets or sets the request handler.
+        /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private AdminRequestHandler RequestHandler { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchedulerRoute"/> class.
@@ -46,26 +42,26 @@ namespace OnePoint.AccountSdk.Schedule
         /// </param>
         public SchedulerRoute(AdminRequestHandler hanlder)
         {
-            this.requestHandler = hanlder;
+            RequestHandler = hanlder;
         }
 
         /// <summary>
-        /// The get schedules.
+        /// The get list of survey schedules.
         /// </summary>
         /// <param name="surveyId">
         /// The survey id.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject GetSchedules(long surveyId)
+        public SchedulerRoot GetSchedules(long surveyId)
         {
             if (surveyId < 1)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/GetScheduledList?surveyID=" + surveyId,
                 HttpMethod.Get,
@@ -73,11 +69,11 @@ namespace OnePoint.AccountSdk.Schedule
                 null);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
-        /// The get schedule details.
+        /// The get schedule email details.
         /// </summary>
         /// <param name="surveyId">
         /// The survey id.
@@ -92,10 +88,10 @@ namespace OnePoint.AccountSdk.Schedule
         {
             if (surveyId < 1)
             {
-                return result.ErrorToObject(new EmailContentRoot(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new EmailContentRoot(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/GetSheduleContent?surveyID=" + surveyId + "&notificationID=" + notificationId,
                 HttpMethod.Get,
@@ -107,7 +103,7 @@ namespace OnePoint.AccountSdk.Schedule
         }
 
         /// <summary>
-        /// The add schedule.
+        /// The add new schedule to a survey.
         /// </summary>
         /// <param name="surveyId">
         /// The survey id.
@@ -119,19 +115,19 @@ namespace OnePoint.AccountSdk.Schedule
         /// The description.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject AddSchedule(long surveyId, string name, string description)
+        public SchedulerRoot AddSchedule(long surveyId, string name, string description, NotificationMedium medium)
         {
             if (surveyId < 1)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
-                new { ScheduleName = name, ScheduleDescription = description, SurveyID = surveyId });
+                new { ScheduleName = name, ScheduleDescription = description, SurveyID = surveyId, Medium = medium });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/AddNewSchedule",
                 HttpMethod.Post,
@@ -139,11 +135,11 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
-        /// The update schedule.
+        /// The update survey schedule.
         /// </summary>
         /// <param name="notificationID">
         /// The notification id.
@@ -155,19 +151,19 @@ namespace OnePoint.AccountSdk.Schedule
         /// The description.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject UpdateSchedule(long notificationID, string name, string description)
+        public SchedulerRoot UpdateSchedule(long notificationID, string name, string description)
         {
             if (notificationID < 1)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
                 new { Name = name, Description = description, NotificationID = notificationID });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/EditSchedule",
                 HttpMethod.Put,
@@ -175,7 +171,7 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -185,16 +181,16 @@ namespace OnePoint.AccountSdk.Schedule
         /// The job i ds.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject DeleteScedules(List<long> jobIDs)
+        public SchedulerRoot DeleteScedules(List<long> jobIDs)
         {
             if (jobIDs.Count < 1)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/DeleteSchedules?JobIDs=" + string.Join(",", jobIDs),
                 HttpMethod.Delete,
@@ -202,7 +198,7 @@ namespace OnePoint.AccountSdk.Schedule
                 null);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -224,9 +220,9 @@ namespace OnePoint.AccountSdk.Schedule
         /// The launch.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject ScheduleMinutesJob(
+        public SchedulerRoot ScheduleMinutesJob(
             long jobDetailID,
             DateTime startDateTime,
             DateTime endDateTime,
@@ -235,21 +231,21 @@ namespace OnePoint.AccountSdk.Schedule
         {
             if (everyMinute < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
                 new
-                    {
-                        JobDetailID = jobDetailID,
-                        StartDateTime = startDateTime,
-                        EndDateTime = endDateTime,
-                        TriggerType = (short)TriggerType.Minutes,
-                        MinuteEvery = everyMinute,
-                        Enablechk = launch
-                    });
+                {
+                    JobDetailID = jobDetailID,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                    TriggerType = (short)TriggerType.Minutes,
+                    MinuteEvery = everyMinute,
+                    Enablechk = launch
+                });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/ScheduleJob",
                 HttpMethod.Post,
@@ -257,7 +253,7 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -288,9 +284,9 @@ namespace OnePoint.AccountSdk.Schedule
         /// The launch.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject ScheduleHourlyJob(
+        public SchedulerRoot ScheduleHourlyJob(
             long jobDetailID,
             DateTime startDateTime,
             DateTime endDateTime,
@@ -302,28 +298,28 @@ namespace OnePoint.AccountSdk.Schedule
         {
             if (everyOrAt == TimePeriodType.Every && everyHour < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
             else if (everyOrAt == TimePeriodType.At && (atHr < 0 || atMinute < 0))
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
                 new
-                    {
-                        JobDetailID = jobDetailID,
-                        StartDateTime = startDateTime,
-                        EndDateTime = endDateTime,
-                        TriggerType = (short)TriggerType.Hourly,
-                        HourlyType = (short)everyOrAt,
-                        HourEvery = everyHour,
-                        HourlyAtHour = atHr,
-                        HourlyAtMinute = atMinute,
-                        Enablechk = launch
-                    });
+                {
+                    JobDetailID = jobDetailID,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                    TriggerType = (short)TriggerType.Hourly,
+                    HourlyType = (short)everyOrAt,
+                    HourEvery = everyHour,
+                    HourlyAtHour = atHr,
+                    HourlyAtMinute = atMinute,
+                    Enablechk = launch
+                });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/ScheduleJob",
                 HttpMethod.Post,
@@ -331,7 +327,7 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -362,9 +358,9 @@ namespace OnePoint.AccountSdk.Schedule
         /// The launch.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject ScheduleDailyJob(
+        public SchedulerRoot ScheduleDailyJob(
             long jobDetailID,
             DateTime startDateTime,
             DateTime endDateTime,
@@ -376,28 +372,28 @@ namespace OnePoint.AccountSdk.Schedule
         {
             if (everyOrAt == TimePeriodType.Every && everyDays < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
             else if (everyOrAt == TimePeriodType.At && (atEveryDayHr < 0 || atEveryDayMinute < 0))
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
                 new
-                    {
-                        JobDetailID = jobDetailID,
-                        StartDateTime = startDateTime,
-                        EndDateTime = endDateTime,
-                        TriggerType = (short)TriggerType.Daily,
-                        DailyType = (short)everyOrAt,
-                        DailyEvery = everyDays,
-                        DailyTabHour = atEveryDayHr,
-                        DailyTabMinute = atEveryDayMinute,
-                        Enablechk = launch
-                    });
+                {
+                    JobDetailID = jobDetailID,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                    TriggerType = (short)TriggerType.Daily,
+                    DailyType = (short)everyOrAt,
+                    DailyEvery = everyDays,
+                    DailyTabHour = atEveryDayHr,
+                    DailyTabMinute = atEveryDayMinute,
+                    Enablechk = launch
+                });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/ScheduleJob",
                 HttpMethod.Post,
@@ -405,7 +401,7 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -433,9 +429,9 @@ namespace OnePoint.AccountSdk.Schedule
         /// The launch.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject ScheduleWeeklyJob(
+        public SchedulerRoot ScheduleWeeklyJob(
             long jobDetailID,
             DateTime startDateTime,
             DateTime endDateTime,
@@ -446,23 +442,23 @@ namespace OnePoint.AccountSdk.Schedule
         {
             if (atHr < 0 || atMinute < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
                 new
-                    {
-                        JobDetailID = jobDetailID,
-                        StartDateTime = startDateTime,
-                        EndDateTime = endDateTime,
-                        TriggerType = (short)TriggerType.Weekly,
-                        Weekly = day.ToString(),
-                        WeekTabHour = atHr,
-                        WeekTabMinute = atMinute,
-                        Enablechk = launch
-                    });
+                {
+                    JobDetailID = jobDetailID,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                    TriggerType = (short)TriggerType.Weekly,
+                    Weekly = day.ToString(),
+                    WeekTabHour = atHr,
+                    WeekTabMinute = atMinute,
+                    Enablechk = launch
+                });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/ScheduleJob",
                 HttpMethod.Post,
@@ -470,7 +466,7 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -513,9 +509,9 @@ namespace OnePoint.AccountSdk.Schedule
         /// The launch.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject ScheduleMonthlyJob(
+        public SchedulerRoot ScheduleMonthlyJob(
             long jobDetailID,
             DateTime startDateTime,
             DateTime endDateTime,
@@ -531,36 +527,36 @@ namespace OnePoint.AccountSdk.Schedule
         {
             if (everyOrAt == TimePeriodType.Every && (everyDay < 0 || everyMonths < 0))
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
             else if (everyOrAt == TimePeriodType.At && atMonths < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
             else if (monthlyHr < 0 || monthlyMinute < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
                 new
-                    {
-                        JobDetailID = jobDetailID,
-                        StartDateTime = startDateTime,
-                        EndDateTime = endDateTime,
-                        TriggerType = (short)TriggerType.Monthly,
-                        MonthlyType = everyOrAt,
-                        MonthlyEveryDay = everyDay,
-                        MonthlyEvery = everyMonths,
-                        MonthlyAtOccurenceType = AtType,
-                        MonthlyAtDaySelected = Atday,
-                        MonthlyAtEvery = atMonths,
-                        MonthTabHour = monthlyHr,
-                        MonthTabMinute = monthlyMinute,
-                        Enablechk = launch
-                    });
+                {
+                    JobDetailID = jobDetailID,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                    TriggerType = (short)TriggerType.Monthly,
+                    MonthlyType = everyOrAt,
+                    MonthlyEveryDay = everyDay,
+                    MonthlyEvery = everyMonths,
+                    MonthlyAtOccurenceType = AtType,
+                    MonthlyAtDaySelected = Atday,
+                    MonthlyAtEvery = atMonths,
+                    MonthTabHour = monthlyHr,
+                    MonthTabMinute = monthlyMinute,
+                    Enablechk = launch
+                });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/ScheduleJob",
                 HttpMethod.Post,
@@ -568,7 +564,7 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -611,9 +607,9 @@ namespace OnePoint.AccountSdk.Schedule
         /// The launch.
         /// </param>
         /// <returns>
-        /// The <see cref="SchedulerRootObject"/>.
+        /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRootObject ScheduleYearlyJob(
+        public SchedulerRoot ScheduleYearlyJob(
             long jobDetailID,
             DateTime startDateTime,
             DateTime endDateTime,
@@ -630,32 +626,32 @@ namespace OnePoint.AccountSdk.Schedule
             // Prblem in scedulet AT part, need to review.
             if (everyOrAt == TimePeriodType.Every && everyYear < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
             else if (yearlyHr < 0 || yearlyMinute < 0)
             {
-                return result.ErrorToObject(new SchedulerRootObject(), "Invalid parameter(s)");
+                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
                 new
-                    {
-                        JobDetailID = jobDetailID,
-                        StartDateTime = startDateTime,
-                        EndDateTime = endDateTime,
-                        TriggerType = (short)TriggerType.Yearly,
-                        YearlyType = everyOrAt,
-                        YearlyEvery = everyYear,
-                        YearlyEveryMonth = (short)everyYearMonth,
-                        YearlyAtOccurenceType = (short)AtOccurence,
-                        YearlyAtWeekSelected = Atday.ToString(),
-                        YearlyAtMonth = (short)AtMonth,
-                        YearTabHour = yearlyHr,
-                        YearTabMinute = yearlyMinute,
-                        Enablechk = launch
-                    });
+                {
+                    JobDetailID = jobDetailID,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                    TriggerType = (short)TriggerType.Yearly,
+                    YearlyType = everyOrAt,
+                    YearlyEvery = everyYear,
+                    YearlyEveryMonth = (short)everyYearMonth,
+                    YearlyAtOccurenceType = (short)AtOccurence,
+                    YearlyAtWeekSelected = Atday.ToString(),
+                    YearlyAtMonth = (short)AtMonth,
+                    YearTabHour = yearlyHr,
+                    YearTabMinute = yearlyMinute,
+                    Enablechk = launch
+                });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/ScheduleJob",
                 HttpMethod.Post,
@@ -663,7 +659,7 @@ namespace OnePoint.AccountSdk.Schedule
                 requestArg);
             x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRootObject(), "Schedules");
+            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
         /// <summary>
@@ -696,15 +692,15 @@ namespace OnePoint.AccountSdk.Schedule
         {
             var requestArg = JsonConvert.SerializeObject(
                 new
-                    {
-                        Notificationid = notificationId,
-                        Templateid = emailTemplateId,
-                        EmailServerId = EmailServerId,
-                        Subject = emailSubject,
-                        Editor = emailContent
-                    });
+                {
+                    Notificationid = notificationId,
+                    Templateid = emailTemplateId,
+                    EmailServerId = EmailServerId,
+                    Subject = emailSubject,
+                    Editor = emailContent
+                });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = this.requestHandler.SendRequestAsync(
+            Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserSchedule/UpdateEmailNotifcation",
                 HttpMethod.Post,

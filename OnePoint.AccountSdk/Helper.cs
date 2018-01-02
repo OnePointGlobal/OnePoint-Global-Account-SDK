@@ -558,6 +558,22 @@ namespace OnePoint.AccountSdk
     }
 
     /// <summary>
+    /// The notification medium.
+    /// </summary>
+    public enum NotificationMedium
+    {
+        /// <summary>
+        /// The email
+        /// </summary>
+        Email = 1,
+
+        /// <summary>
+        /// The sms.
+        /// </summary>
+        Sms = 2
+    }
+
+    /// <summary>
     /// The helper, provides code to perform common operations.
     /// </summary>
     public static class Helper
