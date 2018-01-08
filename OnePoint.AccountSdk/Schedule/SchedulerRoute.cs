@@ -84,7 +84,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="EmailContentRoot"/>.
         /// </returns>
-        public EmailContentRoot GetScheduleDetails(long surveyId, long notificationId = 0)
+        public EmailContentRoot GetScheduleDetails(long surveyId, long jobId = 0)
         {
             if (surveyId < 1)
             {
@@ -93,7 +93,7 @@ namespace OnePoint.AccountSdk.Schedule
 
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
-                "api/UserSchedule/GetSheduleContent?surveyID=" + surveyId + "&notificationID=" + notificationId,
+                "api/UserSchedule/GetSheduleContent?surveyID=" + surveyId + "&notificationID=" + jobId,
                 HttpMethod.Get,
                 RouteStyle.Rpc,
                 null);
@@ -141,7 +141,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <summary>
         /// The update survey schedule.
         /// </summary>
-        /// <param name="notificationID">
+        /// <param name="jobId">
         /// The notification id.
         /// </param>
         /// <param name="name">
@@ -153,15 +153,15 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRoot UpdateSchedule(long notificationID, string name, string description)
+        public SchedulerRoot UpdateSchedule(long jobId, string name, string description)
         {
-            if (notificationID < 1)
+            if (jobId < 1)
             {
                 return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             var requestArg = JsonConvert.SerializeObject(
-                new { Name = name, Description = description, NotificationID = notificationID });
+                new { Name = name, Description = description, NotificationID = jobId });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
@@ -183,16 +183,16 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRoot DeleteScedules(List<long> jobIDs)
+        public SchedulerRoot DeleteScedules(List<long> jobDetailsIds)
         {
-            if (jobIDs.Count < 1)
+            if (jobDetailsIds.Count < 1)
             {
                 return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
-                "api/UserSchedule/DeleteSchedules?JobIDs=" + string.Join(",", jobIDs),
+                "api/UserSchedule/DeleteSchedules?JobDetailIDs=" + string.Join(",", jobDetailsIds),
                 HttpMethod.Delete,
                 RouteStyle.Rpc,
                 null);
@@ -201,466 +201,472 @@ namespace OnePoint.AccountSdk.Schedule
             return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
-        /// <summary>
-        /// The schedule minutes job.
-        /// </summary>
-        /// <param name="jobDetailID">
-        /// The job detail id.
-        /// </param>
-        /// <param name="startDateTime">
-        /// The start date time.
-        /// </param>
-        /// <param name="endDateTime">
-        /// The end date time.
-        /// </param>
-        /// <param name="everyMinute">
-        /// The every minute.
-        /// </param>
-        /// <param name="launch">
-        /// The launch.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SchedulerRoot"/>.
-        /// </returns>
-        public SchedulerRoot ScheduleMinutesJob(
-            long jobDetailID,
-            DateTime startDateTime,
-            DateTime endDateTime,
-            short everyMinute,
-            bool launch = false)
+
+        public void ScheduleOnceJob()
         {
-            if (everyMinute < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
 
-            var requestArg = JsonConvert.SerializeObject(
-                new
-                {
-                    JobDetailID = jobDetailID,
-                    StartDateTime = startDateTime,
-                    EndDateTime = endDateTime,
-                    TriggerType = (short)TriggerType.Minutes,
-                    MinuteEvery = everyMinute,
-                    Enablechk = launch
-                });
-            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = RequestHandler.SendRequestAsync(
-                string.Empty,
-                "api/UserSchedule/ScheduleJob",
-                HttpMethod.Post,
-                RouteStyle.Rpc,
-                requestArg);
-            x.Wait();
-
-            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
-        /// <summary>
-        /// The schedule hourly job.
-        /// </summary>
-        /// <param name="jobDetailID">
-        /// The job detail id.
-        /// </param>
-        /// <param name="startDateTime">
-        /// The start date time.
-        /// </param>
-        /// <param name="endDateTime">
-        /// The end date time.
-        /// </param>
-        /// <param name="everyOrAt">
-        /// The every or at.
-        /// </param>
-        /// <param name="everyHour">
-        /// The every hour.
-        /// </param>
-        /// <param name="atHr">
-        /// The at hr.
-        /// </param>
-        /// <param name="atMinute">
-        /// The at minute.
-        /// </param>
-        /// <param name="launch">
-        /// The launch.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SchedulerRoot"/>.
-        /// </returns>
-        public SchedulerRoot ScheduleHourlyJob(
-            long jobDetailID,
-            DateTime startDateTime,
-            DateTime endDateTime,
-            TimePeriodType everyOrAt,
-            short everyHour,
-            short atHr = 0,
-            short atMinute = 0,
-            bool launch = false)
-        {
-            if (everyOrAt == TimePeriodType.Every && everyHour < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
-            else if (everyOrAt == TimePeriodType.At && (atHr < 0 || atMinute < 0))
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
+        ///// <summary>
+        ///// The schedule minutes job.
+        ///// </summary>
+        ///// <param name="jobDetailID">
+        ///// The job detail id.
+        ///// </param>
+        ///// <param name="startDateTime">
+        ///// The start date time.
+        ///// </param>
+        ///// <param name="endDateTime">
+        ///// The end date time.
+        ///// </param>
+        ///// <param name="everyMinute">
+        ///// The every minute.
+        ///// </param>
+        ///// <param name="launch">
+        ///// The launch.
+        ///// </param>
+        ///// <returns>
+        ///// The <see cref="SchedulerRoot"/>.
+        ///// </returns>
+        //public SchedulerRoot ScheduleMinutesJob(
+        //    long jobDetailID,
+        //    DateTime startDateTime,
+        //    DateTime endDateTime,
+        //    short everyMinute,
+        //    bool launch = false)
+        //{
+        //    if (everyMinute < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
 
-            var requestArg = JsonConvert.SerializeObject(
-                new
-                {
-                    JobDetailID = jobDetailID,
-                    StartDateTime = startDateTime,
-                    EndDateTime = endDateTime,
-                    TriggerType = (short)TriggerType.Hourly,
-                    HourlyType = (short)everyOrAt,
-                    HourEvery = everyHour,
-                    HourlyAtHour = atHr,
-                    HourlyAtMinute = atMinute,
-                    Enablechk = launch
-                });
-            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = RequestHandler.SendRequestAsync(
-                string.Empty,
-                "api/UserSchedule/ScheduleJob",
-                HttpMethod.Post,
-                RouteStyle.Rpc,
-                requestArg);
-            x.Wait();
+        //    var requestArg = JsonConvert.SerializeObject(
+        //        new
+        //        {
+        //            JobDetailID = jobDetailID,
+        //            StartDateTime = startDateTime,
+        //            EndDateTime = endDateTime,
+        //            TriggerType = (short)TriggerType.Minutes,
+        //            MinuteEvery = everyMinute,
+        //            Enablechk = launch
+        //        });
+        //    requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+        //    Task<Result> x = RequestHandler.SendRequestAsync(
+        //        string.Empty,
+        //        "api/UserSchedule/ScheduleJob",
+        //        HttpMethod.Post,
+        //        RouteStyle.Rpc,
+        //        requestArg);
+        //    x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
-        }
+        //    return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
+        //}
 
-        /// <summary>
-        /// The schedule daily job.
-        /// </summary>
-        /// <param name="jobDetailID">
-        /// The job detail id.
-        /// </param>
-        /// <param name="startDateTime">
-        /// The start date time.
-        /// </param>
-        /// <param name="endDateTime">
-        /// The end date time.
-        /// </param>
-        /// <param name="everyOrAt">
-        /// The every or at.
-        /// </param>
-        /// <param name="everyDays">
-        /// The every days.
-        /// </param>
-        /// <param name="atEveryDayHr">
-        /// The at every day hr.
-        /// </param>
-        /// <param name="atEveryDayMinute">
-        /// The at every day minute.
-        /// </param>
-        /// <param name="launch">
-        /// The launch.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SchedulerRoot"/>.
-        /// </returns>
-        public SchedulerRoot ScheduleDailyJob(
-            long jobDetailID,
-            DateTime startDateTime,
-            DateTime endDateTime,
-            TimePeriodType everyOrAt,
-            short everyDays,
-            short atEveryDayHr = 0,
-            short atEveryDayMinute = 0,
-            bool launch = false)
-        {
-            if (everyOrAt == TimePeriodType.Every && everyDays < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
-            else if (everyOrAt == TimePeriodType.At && (atEveryDayHr < 0 || atEveryDayMinute < 0))
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
+        ///// <summary>
+        ///// The schedule hourly job.
+        ///// </summary>
+        ///// <param name="jobDetailID">
+        ///// The job detail id.
+        ///// </param>
+        ///// <param name="startDateTime">
+        ///// The start date time.
+        ///// </param>
+        ///// <param name="endDateTime">
+        ///// The end date time.
+        ///// </param>
+        ///// <param name="everyOrAt">
+        ///// The every or at.
+        ///// </param>
+        ///// <param name="everyHour">
+        ///// The every hour.
+        ///// </param>
+        ///// <param name="atHr">
+        ///// The at hr.
+        ///// </param>
+        ///// <param name="atMinute">
+        ///// The at minute.
+        ///// </param>
+        ///// <param name="launch">
+        ///// The launch.
+        ///// </param>
+        ///// <returns>
+        ///// The <see cref="SchedulerRoot"/>.
+        ///// </returns>
+        //public SchedulerRoot ScheduleHourlyJob(
+        //    long jobDetailID,
+        //    DateTime startDateTime,
+        //    DateTime endDateTime,
+        //    TimePeriodType everyOrAt,
+        //    short everyHour,
+        //    short atHr = 0,
+        //    short atMinute = 0,
+        //    bool launch = false)
+        //{
+        //    if (everyOrAt == TimePeriodType.Every && everyHour < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
+        //    else if (everyOrAt == TimePeriodType.At && (atHr < 0 || atMinute < 0))
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
 
-            var requestArg = JsonConvert.SerializeObject(
-                new
-                {
-                    JobDetailID = jobDetailID,
-                    StartDateTime = startDateTime,
-                    EndDateTime = endDateTime,
-                    TriggerType = (short)TriggerType.Daily,
-                    DailyType = (short)everyOrAt,
-                    DailyEvery = everyDays,
-                    DailyTabHour = atEveryDayHr,
-                    DailyTabMinute = atEveryDayMinute,
-                    Enablechk = launch
-                });
-            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = RequestHandler.SendRequestAsync(
-                string.Empty,
-                "api/UserSchedule/ScheduleJob",
-                HttpMethod.Post,
-                RouteStyle.Rpc,
-                requestArg);
-            x.Wait();
+        //    var requestArg = JsonConvert.SerializeObject(
+        //        new
+        //        {
+        //            JobDetailID = jobDetailID,
+        //            StartDateTime = startDateTime,
+        //            EndDateTime = endDateTime,
+        //            TriggerType = (short)TriggerType.Hourly,
+        //            HourlyType = (short)everyOrAt,
+        //            HourEvery = everyHour,
+        //            HourlyAtHour = atHr,
+        //            HourlyAtMinute = atMinute,
+        //            Enablechk = launch
+        //        });
+        //    requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+        //    Task<Result> x = RequestHandler.SendRequestAsync(
+        //        string.Empty,
+        //        "api/UserSchedule/ScheduleJob",
+        //        HttpMethod.Post,
+        //        RouteStyle.Rpc,
+        //        requestArg);
+        //    x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
-        }
+        //    return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
+        //}
 
-        /// <summary>
-        /// The schedule weekly job.
-        /// </summary>
-        /// <param name="jobDetailID">
-        /// The job detail id.
-        /// </param>
-        /// <param name="startDateTime">
-        /// The start date time.
-        /// </param>
-        /// <param name="endDateTime">
-        /// The end date time.
-        /// </param>
-        /// <param name="day">
-        /// The day.
-        /// </param>
-        /// <param name="atHr">
-        /// The at hr.
-        /// </param>
-        /// <param name="atMinute">
-        /// The at minute.
-        /// </param>
-        /// <param name="launch">
-        /// The launch.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SchedulerRoot"/>.
-        /// </returns>
-        public SchedulerRoot ScheduleWeeklyJob(
-            long jobDetailID,
-            DateTime startDateTime,
-            DateTime endDateTime,
-            WeekDays day,
-            short atHr = 0,
-            short atMinute = 0,
-            bool launch = false)
-        {
-            if (atHr < 0 || atMinute < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
+        ///// <summary>
+        ///// The schedule daily job.
+        ///// </summary>
+        ///// <param name="jobDetailID">
+        ///// The job detail id.
+        ///// </param>
+        ///// <param name="startDateTime">
+        ///// The start date time.
+        ///// </param>
+        ///// <param name="endDateTime">
+        ///// The end date time.
+        ///// </param>
+        ///// <param name="everyOrAt">
+        ///// The every or at.
+        ///// </param>
+        ///// <param name="everyDays">
+        ///// The every days.
+        ///// </param>
+        ///// <param name="atEveryDayHr">
+        ///// The at every day hr.
+        ///// </param>
+        ///// <param name="atEveryDayMinute">
+        ///// The at every day minute.
+        ///// </param>
+        ///// <param name="launch">
+        ///// The launch.
+        ///// </param>
+        ///// <returns>
+        ///// The <see cref="SchedulerRoot"/>.
+        ///// </returns>
+        //public SchedulerRoot ScheduleDailyJob(
+        //    long jobDetailID,
+        //    DateTime startDateTime,
+        //    DateTime endDateTime,
+        //    TimePeriodType everyOrAt,
+        //    short everyDays,
+        //    short atEveryDayHr = 0,
+        //    short atEveryDayMinute = 0,
+        //    bool launch = false)
+        //{
+        //    if (everyOrAt == TimePeriodType.Every && everyDays < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
+        //    else if (everyOrAt == TimePeriodType.At && (atEveryDayHr < 0 || atEveryDayMinute < 0))
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
 
-            var requestArg = JsonConvert.SerializeObject(
-                new
-                {
-                    JobDetailID = jobDetailID,
-                    StartDateTime = startDateTime,
-                    EndDateTime = endDateTime,
-                    TriggerType = (short)TriggerType.Weekly,
-                    Weekly = day.ToString(),
-                    WeekTabHour = atHr,
-                    WeekTabMinute = atMinute,
-                    Enablechk = launch
-                });
-            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = RequestHandler.SendRequestAsync(
-                string.Empty,
-                "api/UserSchedule/ScheduleJob",
-                HttpMethod.Post,
-                RouteStyle.Rpc,
-                requestArg);
-            x.Wait();
+        //    var requestArg = JsonConvert.SerializeObject(
+        //        new
+        //        {
+        //            JobDetailID = jobDetailID,
+        //            StartDateTime = startDateTime,
+        //            EndDateTime = endDateTime,
+        //            TriggerType = (short)TriggerType.Daily,
+        //            DailyType = (short)everyOrAt,
+        //            DailyEvery = everyDays,
+        //            DailyTabHour = atEveryDayHr,
+        //            DailyTabMinute = atEveryDayMinute,
+        //            Enablechk = launch
+        //        });
+        //    requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+        //    Task<Result> x = RequestHandler.SendRequestAsync(
+        //        string.Empty,
+        //        "api/UserSchedule/ScheduleJob",
+        //        HttpMethod.Post,
+        //        RouteStyle.Rpc,
+        //        requestArg);
+        //    x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
-        }
+        //    return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
+        //}
 
-        /// <summary>
-        /// The schedule monthly job.
-        /// </summary>
-        /// <param name="jobDetailID">
-        /// The job detail id.
-        /// </param>
-        /// <param name="startDateTime">
-        /// The start date time.
-        /// </param>
-        /// <param name="endDateTime">
-        /// The end date time.
-        /// </param>
-        /// <param name="everyOrAt">
-        /// The every or at.
-        /// </param>
-        /// <param name="everyDay">
-        /// The every day.
-        /// </param>
-        /// <param name="everyMonths">
-        /// The every months.
-        /// </param>
-        /// <param name="AtType">
-        /// The at type.
-        /// </param>
-        /// <param name="Atday">
-        /// The atday.
-        /// </param>
-        /// <param name="atMonths">
-        /// The at months.
-        /// </param>
-        /// <param name="monthlyHr">
-        /// The monthly hr.
-        /// </param>
-        /// <param name="monthlyMinute">
-        /// The monthly minute.
-        /// </param>
-        /// <param name="launch">
-        /// The launch.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SchedulerRoot"/>.
-        /// </returns>
-        public SchedulerRoot ScheduleMonthlyJob(
-            long jobDetailID,
-            DateTime startDateTime,
-            DateTime endDateTime,
-            TimePeriodType everyOrAt,
-            short everyDay = 0,
-            short everyMonths = 0,
-            OccurenceType AtType = OccurenceType.First,
-            WeekDays Atday = WeekDays.Monday,
-            short atMonths = 0,
-            short monthlyHr = 0,
-            short monthlyMinute = 0,
-            bool launch = false)
-        {
-            if (everyOrAt == TimePeriodType.Every && (everyDay < 0 || everyMonths < 0))
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
-            else if (everyOrAt == TimePeriodType.At && atMonths < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
-            else if (monthlyHr < 0 || monthlyMinute < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
+        ///// <summary>
+        ///// The schedule weekly job.
+        ///// </summary>
+        ///// <param name="jobDetailID">
+        ///// The job detail id.
+        ///// </param>
+        ///// <param name="startDateTime">
+        ///// The start date time.
+        ///// </param>
+        ///// <param name="endDateTime">
+        ///// The end date time.
+        ///// </param>
+        ///// <param name="day">
+        ///// The day.
+        ///// </param>
+        ///// <param name="atHr">
+        ///// The at hr.
+        ///// </param>
+        ///// <param name="atMinute">
+        ///// The at minute.
+        ///// </param>
+        ///// <param name="launch">
+        ///// The launch.
+        ///// </param>
+        ///// <returns>
+        ///// The <see cref="SchedulerRoot"/>.
+        ///// </returns>
+        //public SchedulerRoot ScheduleWeeklyJob(
+        //    long jobDetailID,
+        //    DateTime startDateTime,
+        //    DateTime endDateTime,
+        //    WeekDays day,
+        //    short atHr = 0,
+        //    short atMinute = 0,
+        //    bool launch = false)
+        //{
+        //    if (atHr < 0 || atMinute < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
 
-            var requestArg = JsonConvert.SerializeObject(
-                new
-                {
-                    JobDetailID = jobDetailID,
-                    StartDateTime = startDateTime,
-                    EndDateTime = endDateTime,
-                    TriggerType = (short)TriggerType.Monthly,
-                    MonthlyType = everyOrAt,
-                    MonthlyEveryDay = everyDay,
-                    MonthlyEvery = everyMonths,
-                    MonthlyAtOccurenceType = AtType,
-                    MonthlyAtDaySelected = Atday,
-                    MonthlyAtEvery = atMonths,
-                    MonthTabHour = monthlyHr,
-                    MonthTabMinute = monthlyMinute,
-                    Enablechk = launch
-                });
-            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = RequestHandler.SendRequestAsync(
-                string.Empty,
-                "api/UserSchedule/ScheduleJob",
-                HttpMethod.Post,
-                RouteStyle.Rpc,
-                requestArg);
-            x.Wait();
+        //    var requestArg = JsonConvert.SerializeObject(
+        //        new
+        //        {
+        //            JobDetailID = jobDetailID,
+        //            StartDateTime = startDateTime,
+        //            EndDateTime = endDateTime,
+        //            TriggerType = (short)TriggerType.Weekly,
+        //            Weekly = day.ToString(),
+        //            WeekTabHour = atHr,
+        //            WeekTabMinute = atMinute,
+        //            Enablechk = launch
+        //        });
+        //    requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+        //    Task<Result> x = RequestHandler.SendRequestAsync(
+        //        string.Empty,
+        //        "api/UserSchedule/ScheduleJob",
+        //        HttpMethod.Post,
+        //        RouteStyle.Rpc,
+        //        requestArg);
+        //    x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
-        }
+        //    return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
+        //}
 
-        /// <summary>
-        /// The schedule yearly job.
-        /// </summary>
-        /// <param name="jobDetailID">
-        /// The job detail id.
-        /// </param>
-        /// <param name="startDateTime">
-        /// The start date time.
-        /// </param>
-        /// <param name="endDateTime">
-        /// The end date time.
-        /// </param>
-        /// <param name="everyOrAt">
-        /// The every or at.
-        /// </param>
-        /// <param name="everyYear">
-        /// The every year.
-        /// </param>
-        /// <param name="everyYearMonth">
-        /// The every year month.
-        /// </param>
-        /// <param name="AtOccurence">
-        /// The at occurence.
-        /// </param>
-        /// <param name="Atday">
-        /// The atday.
-        /// </param>
-        /// <param name="AtMonth">
-        /// The at month.
-        /// </param>
-        /// <param name="yearlyHr">
-        /// The yearly hr.
-        /// </param>
-        /// <param name="yearlyMinute">
-        /// The yearly minute.
-        /// </param>
-        /// <param name="launch">
-        /// The launch.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SchedulerRoot"/>.
-        /// </returns>
-        public SchedulerRoot ScheduleYearlyJob(
-            long jobDetailID,
-            DateTime startDateTime,
-            DateTime endDateTime,
-            TimePeriodType everyOrAt,
-            short everyYear = 0,
-            Months everyYearMonth = Months.January,
-            OccurenceType AtOccurence = OccurenceType.First,
-            WeekDays Atday = WeekDays.Monday,
-            Months AtMonth = Months.January,
-            short yearlyHr = 0,
-            short yearlyMinute = 0,
-            bool launch = false)
-        {
-            // Prblem in scedulet AT part, need to review.
-            if (everyOrAt == TimePeriodType.Every && everyYear < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
-            else if (yearlyHr < 0 || yearlyMinute < 0)
-            {
-                return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
-            }
+        ///// <summary>
+        ///// The schedule monthly job.
+        ///// </summary>
+        ///// <param name="jobDetailID">
+        ///// The job detail id.
+        ///// </param>
+        ///// <param name="startDateTime">
+        ///// The start date time.
+        ///// </param>
+        ///// <param name="endDateTime">
+        ///// The end date time.
+        ///// </param>
+        ///// <param name="everyOrAt">
+        ///// The every or at.
+        ///// </param>
+        ///// <param name="everyDay">
+        ///// The every day.
+        ///// </param>
+        ///// <param name="everyMonths">
+        ///// The every months.
+        ///// </param>
+        ///// <param name="AtType">
+        ///// The at type.
+        ///// </param>
+        ///// <param name="Atday">
+        ///// The atday.
+        ///// </param>
+        ///// <param name="atMonths">
+        ///// The at months.
+        ///// </param>
+        ///// <param name="monthlyHr">
+        ///// The monthly hr.
+        ///// </param>
+        ///// <param name="monthlyMinute">
+        ///// The monthly minute.
+        ///// </param>
+        ///// <param name="launch">
+        ///// The launch.
+        ///// </param>
+        ///// <returns>
+        ///// The <see cref="SchedulerRoot"/>.
+        ///// </returns>
+        //public SchedulerRoot ScheduleMonthlyJob(
+        //    long jobDetailID,
+        //    DateTime startDateTime,
+        //    DateTime endDateTime,
+        //    TimePeriodType everyOrAt,
+        //    short everyDay = 0,
+        //    short everyMonths = 0,
+        //    OccurenceType AtType = OccurenceType.First,
+        //    WeekDays Atday = WeekDays.Monday,
+        //    short atMonths = 0,
+        //    short monthlyHr = 0,
+        //    short monthlyMinute = 0,
+        //    bool launch = false)
+        //{
+        //    if (everyOrAt == TimePeriodType.Every && (everyDay < 0 || everyMonths < 0))
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
+        //    else if (everyOrAt == TimePeriodType.At && atMonths < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
+        //    else if (monthlyHr < 0 || monthlyMinute < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
 
-            var requestArg = JsonConvert.SerializeObject(
-                new
-                {
-                    JobDetailID = jobDetailID,
-                    StartDateTime = startDateTime,
-                    EndDateTime = endDateTime,
-                    TriggerType = (short)TriggerType.Yearly,
-                    YearlyType = everyOrAt,
-                    YearlyEvery = everyYear,
-                    YearlyEveryMonth = (short)everyYearMonth,
-                    YearlyAtOccurenceType = (short)AtOccurence,
-                    YearlyAtWeekSelected = Atday.ToString(),
-                    YearlyAtMonth = (short)AtMonth,
-                    YearTabHour = yearlyHr,
-                    YearTabMinute = yearlyMinute,
-                    Enablechk = launch
-                });
-            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = RequestHandler.SendRequestAsync(
-                string.Empty,
-                "api/UserSchedule/ScheduleJob",
-                HttpMethod.Post,
-                RouteStyle.Rpc,
-                requestArg);
-            x.Wait();
+        //    var requestArg = JsonConvert.SerializeObject(
+        //        new
+        //        {
+        //            JobDetailID = jobDetailID,
+        //            StartDateTime = startDateTime,
+        //            EndDateTime = endDateTime,
+        //            TriggerType = (short)TriggerType.Monthly,
+        //            MonthlyType = everyOrAt,
+        //            MonthlyEveryDay = everyDay,
+        //            MonthlyEvery = everyMonths,
+        //            MonthlyAtOccurenceType = AtType,
+        //            MonthlyAtDaySelected = Atday,
+        //            MonthlyAtEvery = atMonths,
+        //            MonthTabHour = monthlyHr,
+        //            MonthTabMinute = monthlyMinute,
+        //            Enablechk = launch
+        //        });
+        //    requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+        //    Task<Result> x = RequestHandler.SendRequestAsync(
+        //        string.Empty,
+        //        "api/UserSchedule/ScheduleJob",
+        //        HttpMethod.Post,
+        //        RouteStyle.Rpc,
+        //        requestArg);
+        //    x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
-        }
+        //    return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
+        //}
+
+        ///// <summary>
+        ///// The schedule yearly job.
+        ///// </summary>
+        ///// <param name="jobDetailID">
+        ///// The job detail id.
+        ///// </param>
+        ///// <param name="startDateTime">
+        ///// The start date time.
+        ///// </param>
+        ///// <param name="endDateTime">
+        ///// The end date time.
+        ///// </param>
+        ///// <param name="everyOrAt">
+        ///// The every or at.
+        ///// </param>
+        ///// <param name="everyYear">
+        ///// The every year.
+        ///// </param>
+        ///// <param name="everyYearMonth">
+        ///// The every year month.
+        ///// </param>
+        ///// <param name="AtOccurence">
+        ///// The at occurence.
+        ///// </param>
+        ///// <param name="Atday">
+        ///// The atday.
+        ///// </param>
+        ///// <param name="AtMonth">
+        ///// The at month.
+        ///// </param>
+        ///// <param name="yearlyHr">
+        ///// The yearly hr.
+        ///// </param>
+        ///// <param name="yearlyMinute">
+        ///// The yearly minute.
+        ///// </param>
+        ///// <param name="launch">
+        ///// The launch.
+        ///// </param>
+        ///// <returns>
+        ///// The <see cref="SchedulerRoot"/>.
+        ///// </returns>
+        //public SchedulerRoot ScheduleYearlyJob(
+        //    long jobDetailID,
+        //    DateTime startDateTime,
+        //    DateTime endDateTime,
+        //    TimePeriodType everyOrAt,
+        //    short everyYear = 0,
+        //    Months everyYearMonth = Months.January,
+        //    OccurenceType AtOccurence = OccurenceType.First,
+        //    WeekDays Atday = WeekDays.Monday,
+        //    Months AtMonth = Months.January,
+        //    short yearlyHr = 0,
+        //    short yearlyMinute = 0,
+        //    bool launch = false)
+        //{
+        //    // Prblem in scedulet AT part, need to review.
+        //    if (everyOrAt == TimePeriodType.Every && everyYear < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
+        //    else if (yearlyHr < 0 || yearlyMinute < 0)
+        //    {
+        //        return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+        //    }
+
+        //    var requestArg = JsonConvert.SerializeObject(
+        //        new
+        //        {
+        //            JobDetailID = jobDetailID,
+        //            StartDateTime = startDateTime,
+        //            EndDateTime = endDateTime,
+        //            TriggerType = (short)TriggerType.Yearly,
+        //            YearlyType = everyOrAt,
+        //            YearlyEvery = everyYear,
+        //            YearlyEveryMonth = (short)everyYearMonth,
+        //            YearlyAtOccurenceType = (short)AtOccurence,
+        //            YearlyAtWeekSelected = Atday.ToString(),
+        //            YearlyAtMonth = (short)AtMonth,
+        //            YearTabHour = yearlyHr,
+        //            YearTabMinute = yearlyMinute,
+        //            Enablechk = launch
+        //        });
+        //    requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+        //    Task<Result> x = RequestHandler.SendRequestAsync(
+        //        string.Empty,
+        //        "api/UserSchedule/ScheduleJob",
+        //        HttpMethod.Post,
+        //        RouteStyle.Rpc,
+        //        requestArg);
+        //    x.Wait();
+
+        //    return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
+        //}
 
         /// <summary>
         /// The sceduler email set up.
@@ -683,32 +689,32 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="SchedulerEmailDetails"/>.
         /// </returns>
-        public SchedulerEmailDetails ScedulerEmailSetUp(
-            int notificationId,
-            int emailTemplateId,
-            int EmailServerId,
-            string emailSubject,
-            string emailContent)
-        {
-            var requestArg = JsonConvert.SerializeObject(
-                new
-                {
-                    Notificationid = notificationId,
-                    Templateid = emailTemplateId,
-                    EmailServerId = EmailServerId,
-                    Subject = emailSubject,
-                    Editor = emailContent
-                });
-            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
-            Task<Result> x = RequestHandler.SendRequestAsync(
-                string.Empty,
-                "api/UserSchedule/UpdateEmailNotifcation",
-                HttpMethod.Post,
-                RouteStyle.Rpc,
-                requestArg);
-            x.Wait();
+        //public SchedulerEmailDetails ScedulerEmailSetUp(
+        //    int notificationId,
+        //    int emailTemplateId,
+        //    int EmailServerId,
+        //    string emailSubject,
+        //    string emailContent)
+        //{
+        //    var requestArg = JsonConvert.SerializeObject(
+        //        new
+        //        {
+        //            Notificationid = notificationId,
+        //            Templateid = emailTemplateId,
+        //            EmailServerId = EmailServerId,
+        //            Subject = emailSubject,
+        //            Editor = emailContent
+        //        });
+        //    requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+        //    Task<Result> x = RequestHandler.SendRequestAsync(
+        //        string.Empty,
+        //        "api/UserSchedule/UpdateEmailNotifcation",
+        //        HttpMethod.Post,
+        //        RouteStyle.Rpc,
+        //        requestArg);
+        //    x.Wait();
 
-            return x.Result.JsonToObject(new SchedulerEmailDetails(), string.Empty);
-        }
+        //    return x.Result.JsonToObject(new SchedulerEmailDetails(), string.Empty);
+        //}
     }
 }

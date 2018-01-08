@@ -252,81 +252,15 @@ namespace OnePoint.AccountSdk.Schedule
     }
 
     /// <summary>
-    /// The trigger detail extension.
-    /// </summary>
-    public class TriggerDetailExtension
-    {
-        /// <summary>
-        /// Gets or sets the trigger detail extension id.
-        /// </summary>
-        public int TriggerDetailExtensionID { get; set; }
-
-        /// <summary>
-        /// Gets or sets the trigger detail id.
-        /// </summary>
-        public int TriggerDetailID { get; set; }
-
-        /// <summary>
-        /// Gets or sets the trigger type.
-        /// </summary>
-        public int TriggerType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the every.
-        /// </summary>
-        public int Every { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether every specified.
-        /// </summary>
-        public bool EverySpecified { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether hour specified.
-        /// </summary>
-        public bool HourSpecified { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether minute specified.
-        /// </summary>
-        public bool MinuteSpecified { get; set; }
-
-        /// <summary>
-        /// Gets or sets the week days.
-        /// </summary>
-        public string WeekDays { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether day specified.
-        /// </summary>
-        public bool DaySpecified { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether occurence type specified.
-        /// </summary>
-        public bool OccurenceTypeSpecified { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether month specified.
-        /// </summary>
-        public bool MonthSpecified { get; set; }
-
-        /// <summary>
-        /// Gets or sets the every at.
-        /// </summary>
-        public int EveryAt { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether every at specified.
-        /// </summary>
-        public bool EveryAtSpecified { get; set; }
-    }
-
-    /// <summary>
     /// The trigger contents.
     /// </summary>
     public class TriggerContents
     {
+        /// <summary>
+        /// Gets or sets the schedule type.
+        /// </summary>
+        public int ScheduleType { get; set; }
+
         /// <summary>
         /// Gets or sets the start.
         /// </summary>
@@ -335,7 +269,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <summary>
         /// Gets or sets the end.
         /// </summary>
-        public string End { get; set; }
+        public object End { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether live.
@@ -343,9 +277,54 @@ namespace OnePoint.AccountSdk.Schedule
         public bool Live { get; set; }
 
         /// <summary>
-        /// Gets or sets the trigger detail extension.
+        /// Gets or sets the repeat time.
         /// </summary>
-        public TriggerDetailExtension TriggerDetailExtension { get; set; }
+        public object RepeatTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the every minutes.
+        /// </summary>
+        public int EveryMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the every hours.
+        /// </summary>
+        public int EveryHours { get; set; }
+
+        /// <summary>
+        /// Gets or sets the every days.
+        /// </summary>
+        public int EveryDays { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weekdays.
+        /// </summary>
+        public object Weekdays { get; set; }
+
+        /// <summary>
+        /// Gets or sets the monthly type.
+        /// </summary>
+        public int MonthlyType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selected days.
+        /// </summary>
+        public object SelectedDays { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selected months.
+        /// </summary>
+        public object SelectedMonths { get; set; }
+
+        /// <summary>
+        /// Gets or sets the monthly occurance.
+        /// </summary>
+        public int MonthlyOccurance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weekday.
+        /// </summary>
+        public object Weekday { get; set; }
     }
 
     /// <summary>
