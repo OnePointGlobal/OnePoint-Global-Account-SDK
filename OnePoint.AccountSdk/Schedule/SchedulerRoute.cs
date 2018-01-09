@@ -202,9 +202,34 @@ namespace OnePoint.AccountSdk.Schedule
         }
 
 
-        public void ScheduleOnceJob()
+        public JobTriggerContent ScheduleOnceJob(long jobDetailsid, DateTime startDateTime)
         {
+            var requestArg = JsonConvert.SerializeObject(
+                new { TriggerType = 1, JobDetailID = jobDetailsid, StartDateTime = startDateTime });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(
+                string.Empty,
+                "api/UserSchedule/ScheduleJob",
+                HttpMethod.Post,
+                RouteStyle.Rpc,
+                requestArg);
+            x.Wait();
+            return x.Result.JsonToObject(new JobTriggerContent(), "TriggerContent");
+        }
 
+        public JobTriggerContent ScheduleDailyJob(long jobDetailsid, DateTime startDateTime, DateTime endDateTime, int? everyHours = null, int? everyMinute = null, double? repeatEvery = null)
+        {
+            var requestArg = JsonConvert.SerializeObject(
+                new { TriggerType = 2, JobDetailID = jobDetailsid, StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, EveryMinute = everyMinute, RepeatEvery = repeatEvery });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(
+                string.Empty,
+                "api/UserSchedule/ScheduleJob",
+                HttpMethod.Post,
+                RouteStyle.Rpc,
+                requestArg);
+            x.Wait();
+            return x.Result.JsonToObject(new JobTriggerContent(), "TriggerContent");
         }
 
         ///// <summary>
@@ -667,7 +692,6 @@ namespace OnePoint.AccountSdk.Schedule
 
         //    return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         //}
-
         /// <summary>
         /// The sceduler email set up.
         /// </summary>

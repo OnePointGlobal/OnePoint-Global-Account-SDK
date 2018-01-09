@@ -343,32 +343,22 @@ namespace OnePoint.AccountSdk
         /// <summary>
         /// The minutes.
         /// </summary>
-        Minutes = 1,
+        Once = 1,
 
         /// <summary>
         /// The hourly.
         /// </summary>
-        Hourly = 2,
+        Daily = 2,
 
         /// <summary>
         /// The daily.
         /// </summary>
-        Daily = 3,
+        Weekly = 3,
 
         /// <summary>
         /// The weekly.
         /// </summary>
-        Weekly = 4,
-
-        /// <summary>
-        /// The monthly.
-        /// </summary>
-        Monthly = 5,
-
-        /// <summary>
-        /// The yearly.
-        /// </summary>
-        Yearly = 6
+        Monthly = 4
     }
 
     /// <summary>

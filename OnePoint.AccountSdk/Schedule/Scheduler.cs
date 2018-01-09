@@ -491,20 +491,12 @@ namespace OnePoint.AccountSdk.Schedule
         public bool IsSuccess { get; set; }
     }
 
-    /// <summary>
-    /// The scheduler email details.
-    /// </summary>
-    public class SchedulerEmailDetails
+    public class JobTriggerContent
     {
         /// <summary>
-        /// Gets or sets the notification.
+        ///  Gets or sets the TriggerContent.
         /// </summary>
-        public Notification Notification { get; set; }
-
-        /// <summary>
-        /// Gets or sets the email content.
-        /// </summary>
-        public EmailContent EmailContent { get; set; }
+        public List<TriggerContents> TriggerContent { get; set; }
 
         /// <summary>
         /// Gets or sets the error message.
@@ -516,4 +508,5 @@ namespace OnePoint.AccountSdk.Schedule
         /// </summary>
         public bool IsSuccess { get; set; }
     }
+
 }
