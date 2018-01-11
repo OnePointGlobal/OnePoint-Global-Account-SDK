@@ -385,37 +385,37 @@ namespace OnePoint.AccountSdk
         /// <summary>
         /// The monday.
         /// </summary>
-        Monday,
+        MON,
 
         /// <summary>
         /// The tuesday.
         /// </summary>
-        Tuesday,
+        TUE,
 
         /// <summary>
         /// The wednesday.
         /// </summary>
-        Wednesday,
+        WED,
 
         /// <summary>
         /// The thursday.
         /// </summary>
-        Thursday,
+        THU,
 
         /// <summary>
         /// The friday.
         /// </summary>
-        Friday,
+        FRI,
 
         /// <summary>
         /// The saturday.
         /// </summary>
-        Saturday,
+        SAT,
 
         /// <summary>
         /// The sunday.
         /// </summary>
-        Sunday
+        SUN
     }
 
     /// <summary>
