@@ -55,7 +55,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRoot GetSchedules(long surveyId)
+        public SchedulerRoot GetInvitationSchedules(long surveyId)
         {
             if (surveyId < 1)
             {
@@ -85,7 +85,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="EmailContentRoot"/>.
         /// </returns>
-        public EmailContentRoot GetScheduleDetails(long surveyId, long jobId = 0)
+        public EmailContentRoot GetInvitationScheduleDetails(long surveyId, long jobId = 0)
         {
             if (surveyId < 1)
             {
@@ -118,7 +118,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRoot AddSchedule(long surveyId, string name, string description, NotificationMedium medium)
+        public SchedulerRoot AddInvitation(long surveyId, string name, string description, NotificationMedium medium)
         {
             if (surveyId < 1)
             {
@@ -154,7 +154,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRoot UpdateSchedule(long jobId, string name, string description)
+        public SchedulerRoot UpdateInvitation(long jobId, string name, string description)
         {
             if (jobId < 1)
             {
@@ -184,7 +184,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// <returns>
         /// The <see cref="SchedulerRoot"/>.
         /// </returns>
-        public SchedulerRoot DeleteScedules(List<long> jobDetailsIds)
+        public SchedulerRoot DeleteInvitationScedules(List<long> jobDetailsIds)
         {
             if (jobDetailsIds.Count < 1)
             {
@@ -202,6 +202,48 @@ namespace OnePoint.AccountSdk.Schedule
             return x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
         }
 
+        public EmailContentRoot UpdateInvitationEmailContent(long jobId, string emailSub, string emailBody, int emailTemplateId = 0, int emailServerId = 0)
+        {
+            if (jobId < 1 || string.IsNullOrEmpty(emailBody) || string.IsNullOrEmpty(emailBody))
+            {
+                return _result.ErrorToObject(new EmailContentRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(
+            new { Notificationid = jobId, Subject = emailSub, Editor = emailBody, Templateid = emailTemplateId, EmailServerId = emailServerId });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(
+                string.Empty,
+                "api/UserSchedule/UpdateEmailNotifcation",
+                HttpMethod.Post,
+                RouteStyle.Rpc,
+                requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new EmailContentRoot());
+        }
+
+        public bool UpdateInvitationSmsContent(long jobId, string smsContent)
+        {
+            //This function needs improvment in return data.
+            if (jobId < 1 || string.IsNullOrEmpty(smsContent))
+            {
+                return false;
+            }
+
+            var requestArg = JsonConvert.SerializeObject(
+                new { Notificationid = jobId, SmsContent = smsContent });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+            Task<Result> x = RequestHandler.SendRequestAsync(
+                string.Empty,
+                "api/UserSchedule/UpdateSmsNotifcation",
+                HttpMethod.Post,
+                RouteStyle.Rpc,
+                requestArg);
+            x.Wait();
+
+            return true;
+        }
 
         public JobTriggerContent ScheduleOnceJob(long jobDetailsid, DateTime startDateTime)
         {
