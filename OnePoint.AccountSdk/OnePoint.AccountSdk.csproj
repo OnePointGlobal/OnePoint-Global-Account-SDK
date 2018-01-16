@@ -74,6 +74,7 @@
     <Compile Include="Result.cs" />
     <Compile Include="Sample\Sample.cs" />
     <Compile Include="Sample\SampleRoute.cs" />
+    <Compile Include="Schedule\NotificationRoute.cs" />
     <Compile Include="Schedule\Scheduler.cs" />
     <Compile Include="Schedule\SchedulerRoute.cs" />
     <Compile Include="Survey\Survey.cs" />
