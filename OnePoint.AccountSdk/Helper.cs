@@ -560,7 +560,12 @@ namespace OnePoint.AccountSdk
         /// <summary>
         /// The sms.
         /// </summary>
-        Sms = 2
+        Sms = 2,
+
+        /// <summary>
+        /// The App.
+        /// </summary>
+        App = 3
     }
 
     /// <summary>
