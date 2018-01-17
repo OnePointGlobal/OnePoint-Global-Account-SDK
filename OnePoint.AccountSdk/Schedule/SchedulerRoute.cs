@@ -125,6 +125,11 @@ namespace OnePoint.AccountSdk.Schedule
                 return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
+            if (medium == NotificationMedium.App)
+            {
+                return _result.ErrorToObject(new SchedulerRoot(), "App medium is invalid in invitation!");
+            }
+
             var requestArg = JsonConvert.SerializeObject(
                 new { ScheduleName = name, ScheduleDescription = description, SurveyID = surveyId, Medium = medium });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
