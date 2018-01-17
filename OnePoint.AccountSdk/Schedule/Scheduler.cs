@@ -7,7 +7,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 
 namespace OnePoint.AccountSdk.Schedule
@@ -56,11 +55,6 @@ namespace OnePoint.AccountSdk.Schedule
         /// Gets or sets the ref id.
         /// </summary>
         public int RefID { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user id.
-        /// </summary>
-        public int UserID { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether is deleted.
@@ -489,6 +483,25 @@ namespace OnePoint.AccountSdk.Schedule
         /// Gets or sets a value indicating whether is success.
         /// </summary>
         public bool IsSuccess { get; set; }
+    }
+
+    public class NotificationRoot
+    {
+        /// <summary>
+        /// Gets or sets the schedules.
+        /// </summary>
+        public List<Notification> Notifications { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error message.
+        /// </summary>
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether is success.
+        /// </summary>
+        public bool IsSuccess { get; set; }
+
     }
 
     public class JobTriggerContent
