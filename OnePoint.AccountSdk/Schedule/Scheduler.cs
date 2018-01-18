@@ -485,6 +485,9 @@ namespace OnePoint.AccountSdk.Schedule
         public bool IsSuccess { get; set; }
     }
 
+    /// <summary>
+    /// The survey notification root.
+    /// </summary>
     public class NotificationRoot
     {
         /// <summary>
@@ -504,12 +507,56 @@ namespace OnePoint.AccountSdk.Schedule
 
     }
 
+    /// <summary>
+    /// The job trigger content
+    /// </summary>
     public class JobTriggerContent
     {
         /// <summary>
         ///  Gets or sets the TriggerContent.
         /// </summary>
         public List<TriggerContents> TriggerContent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error message.
+        /// </summary>
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether is success.
+        /// </summary>
+        public bool IsSuccess { get; set; }
+    }
+
+    /// <summary>
+    /// The survey notification content.
+    /// </summary>
+    public class NotificationContentRoute
+    {
+        /// <summary>
+        /// Gets or sets the email server.
+        /// </summary>
+        public List<EmailServer> EmailServer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email template.
+        /// </summary>
+        public List<EmailTemplate> EmailTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the trigger contents.
+        /// </summary>
+        public TriggerContents TriggerContents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification.
+        /// </summary>
+        public Notification Notification { get; set; }
+
+        /// <summary>
+        /// Gets or sets the special fields.
+        /// </summary>
+        public List<string> SpecialFields { get; set; }
 
         /// <summary>
         /// Gets or sets the error message.
