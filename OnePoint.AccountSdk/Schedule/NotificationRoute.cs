@@ -19,7 +19,7 @@ namespace OnePoint.AccountSdk.Schedule
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private AdminRequestHandler RequestHandler { get; }
 
- 
+
         /// <summary>
         /// The notifcationRoute constructor.
         /// </summary>
@@ -197,6 +197,43 @@ namespace OnePoint.AccountSdk.Schedule
             x.Wait();
 
             return x.Result.JsonToObject(new NotificationContentRoute());
+        }
+
+        /// <summary>
+        /// The update app notification content.
+        /// </summary>
+        /// <param name="notificationId">
+        /// The notification id.
+        /// </param>
+        /// <param name="pushMessage">
+        /// The push message.
+        /// </param>
+        /// <param name="title">
+        /// The title.
+        /// </param>
+        /// <returns>
+        /// The <see cref="NotificationRoot"/>.
+        /// </returns>
+        public NotificationRoot UpdateAppNotificationContent(long notificationId, string pushMessage, string title)
+        {
+            if (notificationId < 1 || string.IsNullOrEmpty(pushMessage) || string.IsNullOrEmpty(title))
+            {
+                return _result.ErrorToObject(new NotificationRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(
+                new { AppContent = pushMessage, AppTitle = title, NotificationID = notificationId });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+
+            Task<Result> x = RequestHandler.SendRequestAsync(
+                string.Empty,
+                "api/UserNotification/UpdateAppNotifcation",
+                HttpMethod.Post,
+                RouteStyle.Rpc,
+                requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new NotificationRoot(), "Notifications");
         }
     }
 }
