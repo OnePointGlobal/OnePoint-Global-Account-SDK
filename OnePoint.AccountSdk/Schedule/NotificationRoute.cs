@@ -235,5 +235,42 @@ namespace OnePoint.AccountSdk.Schedule
 
             return x.Result.JsonToObject(new NotificationRoot(), "Notifications");
         }
+
+        /// <summary>
+        /// The update sms notification content.
+        /// </summary>
+        /// <param name="notificationId">
+        /// The notification id.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="subType">
+        /// The sub type.
+        /// </param>
+        /// <returns>
+        /// The <see cref="NotificationRoot"/>.
+        /// </returns>
+        public NotificationRoot UpdateSmsNotificationContent(long notificationId, string message, SurveyNotificationJobType subType)
+        {
+            if (notificationId < 1 || string.IsNullOrEmpty(message) )
+            {
+                return _result.ErrorToObject(new NotificationRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(
+                new { SmsContent = message, SubType = subType, NotificationID = notificationId });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+
+            Task<Result> x = RequestHandler.SendRequestAsync(
+                string.Empty,
+                "api/UserNotification/UpdateSmsNotifcation",
+                HttpMethod.Post,
+                RouteStyle.Rpc,
+                requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new NotificationRoot(), "Notifications");
+        }
     }
 }
