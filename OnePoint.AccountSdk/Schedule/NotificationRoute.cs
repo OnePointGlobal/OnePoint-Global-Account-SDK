@@ -253,7 +253,7 @@ namespace OnePoint.AccountSdk.Schedule
         /// </returns>
         public NotificationRoot UpdateSmsNotificationContent(long notificationId, string message, SurveyNotificationJobType subType)
         {
-            if (notificationId < 1 || string.IsNullOrEmpty(message) )
+            if (notificationId < 1 || string.IsNullOrEmpty(message))
             {
                 return _result.ErrorToObject(new NotificationRoot(), "Invalid parameter(s)");
             }
@@ -265,6 +265,32 @@ namespace OnePoint.AccountSdk.Schedule
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
                 "api/UserNotification/UpdateSmsNotifcation",
+                HttpMethod.Post,
+                RouteStyle.Rpc,
+                requestArg);
+            x.Wait();
+
+            return x.Result.JsonToObject(new NotificationRoot(), "Notifications");
+        }
+
+
+
+        public NotificationRoot UpdateEmailNotificationContent(long notificationId, SurveyNotificationJobType subType,
+            string subject, string emailContent, long emailtemplateId = 0, int emailServerId = 0)
+        {
+
+            if (notificationId < 1 || string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(emailContent) || emailtemplateId < 0 || emailServerId < 0)
+            {
+                return _result.ErrorToObject(new NotificationRoot(), "Invalid parameter(s)");
+            }
+
+            var requestArg = JsonConvert.SerializeObject(
+                new { Subject = subject, EmailContent = emailContent, SubType = subType, NotificationID = notificationId, Templateid = emailtemplateId, EmailServerID = emailServerId, });
+            requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
+
+            Task<Result> x = RequestHandler.SendRequestAsync(
+                string.Empty,
+                "api/UserNotification/UpdateEmailNotifcation",
                 HttpMethod.Post,
                 RouteStyle.Rpc,
                 requestArg);
