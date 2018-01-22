@@ -272,5 +272,35 @@ namespace OnePoint.AccountSdk.Schedule
 
             return x.Result.JsonToObject(new NotificationRoot(), "Notifications");
         }
+
+        /// <summary>
+        /// The notification go live.
+        /// </summary>
+        /// <param name="notificationId">
+        /// The notification id.
+        /// </param>
+        /// <param name="makeLive">
+        /// The make live.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        public bool GoLive(long notificationId, bool makeLive = true)
+        {
+            // Need to work more on return data.
+            if (notificationId < 1)
+            {
+                // return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
+            }
+
+            Task<Result> x = RequestHandler.SendRequestAsync(string.Empty, "api/UserSchedule/GoLive?jobID=" + notificationId + "&isLive=" + makeLive,
+                HttpMethod.Get,
+                RouteStyle.Rpc,
+                null);
+            x.Wait();
+
+            var temp = x.Result.JsonToObject(new SchedulerRoot(), "Schedules");
+            return temp.IsSuccess;
+        }
     }
 }
