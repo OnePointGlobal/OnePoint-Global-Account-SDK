@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace OnePoint.AccountSdk.Schedule
 {
+    /// <summary>
+    /// This class has code to operate on survey notification data.
+    /// </summary>
     public class NotificationRoute
     {
         /// <summary>
@@ -19,7 +22,6 @@ namespace OnePoint.AccountSdk.Schedule
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private AdminRequestHandler RequestHandler { get; }
 
-
         /// <summary>
         /// The notifcationRoute constructor.
         /// </summary>
@@ -28,7 +30,6 @@ namespace OnePoint.AccountSdk.Schedule
         {
             RequestHandler = hanlder;
         }
-
 
         /// <summary>
         /// The get survey notifications.
@@ -56,7 +57,6 @@ namespace OnePoint.AccountSdk.Schedule
 
             return x.Result.JsonToObject(new NotificationRoot(), "Notifications");
         }
-
 
         /// <summary>
         /// The add survey notification.
@@ -273,8 +273,30 @@ namespace OnePoint.AccountSdk.Schedule
             return x.Result.JsonToObject(new NotificationRoot(), "Notifications");
         }
 
-
-
+        /// <summary>
+        /// The update email notification content.
+        /// </summary>
+        /// <param name="notificationId">
+        /// The notification id.
+        /// </param>
+        /// <param name="subType">
+        /// The sub type.
+        /// </param>
+        /// <param name="subject">
+        /// The subject.
+        /// </param>
+        /// <param name="emailContent">
+        /// The email content.
+        /// </param>
+        /// <param name="emailtemplateId">
+        /// The emailtemplate id.
+        /// </param>
+        /// <param name="emailServerId">
+        /// The email server id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="NotificationRoot"/>.
+        /// </returns>
         public NotificationRoot UpdateEmailNotificationContent(long notificationId, SurveyNotificationJobType subType,
             string subject, string emailContent, long emailtemplateId = 0, int emailServerId = 0)
         {
