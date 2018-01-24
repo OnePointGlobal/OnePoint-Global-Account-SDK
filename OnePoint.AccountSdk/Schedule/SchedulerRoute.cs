@@ -125,6 +125,11 @@ namespace OnePoint.AccountSdk.Schedule
                 return _result.ErrorToObject(new SchedulerRoot(), "Invalid parameter(s)");
             }
 
+            if (medium == NotificationMedium.App)
+            {
+                return _result.ErrorToObject(new SchedulerRoot(), "App medium is invalid in invitation!");
+            }
+
             var requestArg = JsonConvert.SerializeObject(
                 new { ScheduleName = name, ScheduleDescription = description, SurveyID = surveyId, Medium = medium });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
@@ -245,15 +250,15 @@ namespace OnePoint.AccountSdk.Schedule
             return true;
         }
 
-        public JobTriggerContent ScheduleOnceJob(long jobDetailsid, DateTime startDateTime)
+        public JobTriggerContent ScheduleOnceJob(long jobId, DateTime startDateTime)
         {
-            if (jobDetailsid < 1)
+            if (jobId < 1)
             {
                 return _result.ErrorToObject(new JobTriggerContent(), "Invalid parameter(s)!");
             }
 
             var requestArg = JsonConvert.SerializeObject(
-                new { TriggerType = 1, JobDetailID = jobDetailsid, StartDateTime = startDateTime });
+                new { TriggerType = 1, JobDetailID = jobId, StartDateTime = startDateTime });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
@@ -265,15 +270,15 @@ namespace OnePoint.AccountSdk.Schedule
             return x.Result.JsonToObject(new JobTriggerContent(), "TriggerContent");
         }
 
-        public JobTriggerContent ScheduleDailyJob(long jobDetailsid, DateTime startDateTime, DateTime endDateTime, int? everyHours = null, int? everyMinute = null, double? repeatEvery = null)
+        public JobTriggerContent ScheduleDailyJob(long jobId, DateTime startDateTime, DateTime endDateTime, int? everyHours = null, int? everyMinute = null, double? repeatEvery = null)
         {
-            if (jobDetailsid < 1)
+            if (jobId < 1)
             {
                 return _result.ErrorToObject(new JobTriggerContent(), "Invalid parameter(s)!");
             }
 
             var requestArg = JsonConvert.SerializeObject(
-                new { TriggerType = 2, JobDetailID = jobDetailsid, StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, EveryMinute = everyMinute, RepeatEvery = repeatEvery });
+                new { TriggerType = 2, JobDetailID = jobId, StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, EveryMinute = everyMinute, RepeatEvery = repeatEvery });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
@@ -285,15 +290,15 @@ namespace OnePoint.AccountSdk.Schedule
             return x.Result.JsonToObject(new JobTriggerContent(), "TriggerContent");
         }
 
-        public JobTriggerContent ScheduleWeeklyJob(long jobDetailsid, DateTime startDateTime, DateTime endDateTime, int? everyHours = null, int? everyMinute = null, params WeekDays[] weekdays)
+        public JobTriggerContent ScheduleWeeklyJob(long jobId, DateTime startDateTime, DateTime endDateTime, int? everyHours = null, int? everyMinute = null, params WeekDays[] weekdays)
         {
-            if (jobDetailsid < 1)
+            if (jobId < 1)
             {
                 return _result.ErrorToObject(new JobTriggerContent(), "Invalid parameter(s)!");
             }
 
             var requestArg = JsonConvert.SerializeObject(
-                new { TriggerType = 3, JobDetailID = jobDetailsid, StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, EveryMinute = everyMinute, Weekdays = string.Join(",", weekdays) });
+                new { TriggerType = 3, JobDetailID = jobId, StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, EveryMinute = everyMinute, Weekdays = string.Join(",", weekdays) });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
@@ -305,12 +310,12 @@ namespace OnePoint.AccountSdk.Schedule
             return x.Result.JsonToObject(new JobTriggerContent(), "TriggerContent");
         }
 
-        public JobTriggerContent ScheduleMonthlyJob(long jobDetailsid, DateTime startDateTime, DateTime endDateTime, List<Months> selectedMonths, int[] selectedDays, int? everyHours = null, int? everyMinute = null)
+        public JobTriggerContent ScheduleMonthlyJob(long jobId, DateTime startDateTime, DateTime endDateTime, List<Months> selectedMonths, int[] selectedDays, int? everyHours = null, int? everyMinute = null)
         {
             var maxday = selectedDays.Max();
             var minDay = selectedDays.Min();
 
-            if (jobDetailsid < 1 || selectedMonths.Count < 1)
+            if (jobId < 1 || selectedMonths.Count < 1)
             {
                 return _result.ErrorToObject(new JobTriggerContent(), "Invalid parameter(s)!");
             }
@@ -321,7 +326,7 @@ namespace OnePoint.AccountSdk.Schedule
             }
 
             var requestArg = JsonConvert.SerializeObject(
-                new { TriggerType = 4, JobDetailID = jobDetailsid, MonthlyType = 1, StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, SelectedMonths = string.Join(",", selectedMonths), EveryMinute = everyMinute, SelectedDays = string.Join(",", selectedDays) });
+                new { TriggerType = 4, JobDetailID = jobId, MonthlyType = 1, StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, SelectedMonths = string.Join(",", selectedMonths), EveryMinute = everyMinute, SelectedDays = string.Join(",", selectedDays) });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,
@@ -333,15 +338,15 @@ namespace OnePoint.AccountSdk.Schedule
             return x.Result.JsonToObject(new JobTriggerContent(), "TriggerContent");
         }
 
-        public JobTriggerContent ScheduleMonthlyJob(long jobDetailsid, DateTime startDateTime, DateTime endDateTime, List<Months> selectedMonths, OccurenceType monthlyOccurence, WeekDays weekday, int? everyHours = null, int? everyMinute = null)
+        public JobTriggerContent ScheduleMonthlyJob(long jobId, DateTime startDateTime, DateTime endDateTime, List<Months> selectedMonths, OccurenceType monthlyOccurence, WeekDays weekday, int? everyHours = null, int? everyMinute = null)
         {
-            if (jobDetailsid < 1 || selectedMonths.Count < 1)
+            if (jobId < 1 || selectedMonths.Count < 1)
             {
                 return _result.ErrorToObject(new JobTriggerContent(), "Invalid parameter(s)!");
             }
 
             var requestArg = JsonConvert.SerializeObject(
-                new { TriggerType = 4, JobDetailID = jobDetailsid, MonthlyType = 2, MonthlyOccurance = (short)monthlyOccurence, SelectedMonths = string.Join(",", selectedMonths), StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, EveryMinute = everyMinute, Weekday = weekday.ToString() });
+                new { TriggerType = 4, JobDetailID = jobId, MonthlyType = 2, MonthlyOccurance = (short)monthlyOccurence, SelectedMonths = string.Join(",", selectedMonths), StartDateTime = startDateTime, EndDateTime = endDateTime, EveryHours = everyHours, EveryMinute = everyMinute, Weekday = weekday.ToString() });
             requestArg = JsonConvert.SerializeObject(new { Data = requestArg });
             Task<Result> x = RequestHandler.SendRequestAsync(
                 string.Empty,

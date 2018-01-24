@@ -107,6 +107,12 @@ namespace OnePoint.AccountSdk
         /// </summary>
         public SchedulerRoute Scheduler { get; private set; }
 
+
+        /// <summary>
+        /// Gets the notification.
+        /// </summary>
+        public NotificationRoute Notification { get; private set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminClient"/> class, which initializes httpclinet with default live api domain.
         /// </summary>
@@ -171,6 +177,7 @@ namespace OnePoint.AccountSdk
             Sample = new SampleRoute(handler);
             Theme = new ThemeRoute(handler);
             Scheduler = new SchedulerRoute(handler);
+            Notification = new NotificationRoute(handler);
         }
     }
 }
